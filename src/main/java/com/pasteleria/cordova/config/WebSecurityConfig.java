@@ -41,7 +41,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/registro**", "/js/**", "/css/**", "/imagenes/**", "/").permitAll() // Rutas públicas
+
+                .antMatchers("/registro**", "/js/**", "/css/**", "/imagenes/**", "/","/static/**").permitAll() // Rutas públicas
                 .antMatchers("/admin/**").hasRole("ADMIN") // Rutas solo para administradores
                 .antMatchers("/cliente/**").hasRole("CLIENTE") // Rutas solo para clientes
                 .anyRequest().authenticated()

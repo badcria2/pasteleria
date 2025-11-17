@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastelería Córdova - Tradición y Calidad</title>
+    <link rel="stylesheet" href="/estilos.css">
+    <link rel="shortcut icon" href="/Imagenes/Logo.png.jpg" type="image/x-icon">
+</head>
+<body>
+<!-- Header -->
+<header>
+    <nav>
+        <div class="logo">Pastelería Córdova</div>
+        <div class="search-bar">
+            <form action="/" method="get">
+                <input type="text" id="searchInput" name="search" placeholder="Buscar productos..." th:value="${param.search}">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#productos">Productos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#opiniones">Opiniones</a></li>
+            <li><a href="#" onclick="openModal()">Iniciar Sesión</a></li>
+            <li><a href="#" onclick="verCarrito()" style="position: relative;">
+                🛒 <span id="cart-count" class="cart-badge">0</span>
+            </a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section id="inicio" class="hero">
+    <h1>Bienvenidos a Pastelería Córdova</h1>
+    <p>Tradición, calidad y sabor en cada bocado</p>
+    <button class="btn" onclick="location.href='#productos'">Ver Productos</button>
+</section>
+
+<!-- Productos Section -->
+<section id="productos" class="productos">
+    <h2>Nuestros Productos</h2>
+    <div class="productos-grid" id="productosGrid">
+
+        <!-- Iteración de productos desde el backend -->
+        <div class="producto-card" th:each="producto : ${productos}" th:data-nombre="${producto.nombre}">
+            <div class="producto-img-container">
+                <img th:src="@{'/Imagenes/' + ${producto.imagen}}" th:alt="${producto.nombre}" />
+            </div>
+            <div class="producto-info">
+                <h3 th:text="${producto.nombre}">Nombre del Producto</h3>
+                <p th:text="${producto.descripcion}">Descripción del producto.</p>
+                <div class="precio" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 00.00</div>
+                <button class="btn btn-carrito" th:onclick="|agregarAlCarrito('${producto.nombre}', ${producto.precio})|">Agregar al Carrito</button>
+            </div>
+        </div>
+        <!-- Fin de la iteración -->
+
+        <!-- Producto de ejemplo para cuando no haya productos del backend, o si deseas mantener algunos estáticos -->
+        <div th:if="${#lists.isEmpty(productos)}" class="producto-card" data-nombre="Torta de Maracuyá" style="display: none;">
+            <div class="producto-img-container">
+                <img src="/Imagenes/Imagen1.png" alt="Torta de Maracuyá" />
+            </div>
+            <div class="producto-info">
+                <h3>Torta de Maracuyá</h3>
+                <p>Exquisita torta con crema de maracuyá tropical, perfecta para los amantes de los sabores cítricos y refrescantes</p>
+                <div class="precio">S/ 65.00</div>
+                <button class="btn btn-carrito" onclick="agregarAlCarrito('Torta de Maracuyá', 65)">Agregar al Carrito</button>
+            </div>
+        </div>
+        <!-- Puedes eliminar o adaptar los productos estáticos si ya confías en el backend -->
+
+    </div>
+</section>
+
+<!-- Opiniones Section -->
+<section id="opiniones" class="opiniones">
+    <h2>Opiniones de Nuestros Clientes</h2>
+    <div class="opiniones-grid">
+        <div class="opinion-card">
+            <div class="estrellas">⭐⭐⭐⭐⭐</div>
+            <p>"Las mejores tortas de Lima. La calidad es excepcional y el sabor incomparable. ¡Totalmente recomendado!"</p>
+            <div class="opinion-autor">- María González</div>
+        </div>
+
+        <div class="opinion-card">
+            <div class="estrellas">⭐⭐⭐⭐⭐</div>
+            <p>"Excelente servicio y productos frescos. Los queques son deliciosos y perfectos para cualquier ocasión."</p>
+            <div class="opinion-autor">- Carlos Rodríguez</div>
+        </div>
+
+        <div class="opinion-card">
+            <div class="estrellas">⭐⭐⭐⭐⭐</div>
+            <p>"La atención es muy cálida y personalizada. Los precios son justos para la calidad que ofrecen. ¡Volveré sin duda!"</p>
+            <div class="opinion-autor">- Ana Pérez</div>
+        </div>
+    </div>
+</section>
+
+<!-- Contacto Section -->
+<section id="contacto" class="contacto">
+    <h2>Contáctanos</h2>
+    <div class="contacto-content">
+        <div class="contacto-info">
+            <h3 style="color: #ff1493; margin-bottom: 1rem;">Información de Contacto</h3>
+            <div class="info-item">
+                <span>📍</span>
+                <div>
+                    <strong>Sedes: </strong><br>
+                    Jirón Las Magnolias 501, Lima 15812 /
+                    Av. José Carlos Mariátegui 1780, VMT 15803 /
+                    Av. José Carlos Mariátegui 1090, VMT 15811 /
+                    Av. San Juan 609-B, San Juan de Miraflores
+                </div>
+            </div>
+            <div class="info-item">
+                <span>📞</span>
+                <div>
+                    <strong>Teléfono:</strong><br>
+                    +51 919714277
+                </div>
+            </div>
+            <div class="info-item">
+                <span>📧</span>
+                <div>
+                    <strong>Email:</strong><br>
+                    pasteleriacordova@gmail.com
+                </div>
+            </div>
+            <div class="info-item">
+                <span>💬</span>
+                <div>
+                    <strong>WhatsApp:</strong><br>
+                    <a href="https://wa.me/51987654321" style="color: #25d366; text-decoration: none;">Enviar mensaje</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="contacto-form">
+            <h3 style="color: #ff1493; margin-bottom: 1rem;">Envíanos un Mensaje</h3>
+            <input type="text" placeholder="Nombre" required>
+            <input type="email" placeholder="Email" required>
+            <input type="tel" placeholder="Teléfono" required>
+            <textarea rows="5" placeholder="Mensaje" required></textarea>
+            <button class="btn" style="width: 100%;">Enviar Mensaje</button>
+        </div>
+    </div>
+</section>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2>Iniciar Sesión</h2>
+        <form>
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Contraseña" required>
+            <button class="btn" style="width: 100%; margin-top: 1rem;">Ingresar</button>
+        </form>
+        <p style="text-align: center; margin-top: 1rem; color: #666;">
+            ¿No tienes cuenta? <a href="#" style="color: #ff1493;">Regístrate aquí</a>
+        </p>
+    </div>
+</div>
+
+<!-- Modal del Carrito -->
+<div id="carritoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="cerrarCarrito()">&times;</span>
+        <h2>Mi Carrito de Compras</h2>
+        <div id="carrito-items"></div>
+        <div id="carrito-total" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid #ff1493;">
+            <h3>Total: S/ <span id="total-precio">0.00</span></h3>
+        </div>
+        <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="finalizarCompra()">Finalizar Compra por WhatsApp</button>
+        <button class="btn" style="width: 100%; margin-top: 0.5rem; background: #666;" onclick="vaciarCarrito()">Vaciar Carrito</button>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
+    <p>4 locales en Lima | Tradición y Calidad desde siempre</p>
+</footer>
+
+<!-- Botón flotante de WhatsApp -->
+<a href="https://wa.me/51987654321?text=Pasteler%C3%ADa%20C%C3%B3rdova%2C%20me%20gustar%C3%ADa%20realizar%20un%20pedido%20personalizado"
+   class="whatsapp-float"
+   target="_blank"
+   title="Contactar por WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="60" height="60">
+</a>
+<script src="/script.js"></script>
+</body>
+</html>

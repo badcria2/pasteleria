@@ -21,31 +21,46 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
     @Autowired
     private ClienteRepository clienteRepository;
+
     @Autowired
     private AdministradorRepository administradorRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+        System.out.println(">>> Buscando usuario por email: " + email);
 
-        // Determinar roles del usuario
-        List<GrantedAuthority> authorities;
-        if (administradorRepository.findByUsuario(usuario).isPresent()) {
-            authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (clienteRepository.findByUsuario(usuario).isPresent()) {
-            authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_CLIENTE"));
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+        System.out.println(">>> userId: " + usuario.toString());
+
+        Integer userId = usuario.getId();
+        String rol;
+
+        boolean esAdmin = administradorRepository.findByUsuario(usuario).isPresent();
+        boolean esCliente = clienteRepository.findByUsuario(usuario).isPresent();
+        System.out.println(">>> esAdmin: " + esAdmin);
+        System.out.println(">>> esCliente: " + esCliente);
+
+        if (esAdmin) {
+            rol = "ROLE_ADMIN";
+        } else if (esCliente) {
+            rol = "ROLE_CLIENTE";
         } else {
-            // Usuario sin rol específico (podrías tener un rol "USER" por defecto o manejarlo como quieras)
-            authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+            rol = "ROLE_USER";
         }
 
         return new org.springframework.security.core.userdetails.User(
                 usuario.getEmail(),
-                usuario.getContraseña(),
-                authorities
+                usuario.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority(rol))
         );
+    }
+    // Nuevo método para obtener el objeto Usuario completo
+    public Usuario getUsuarioByEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
     }
 }

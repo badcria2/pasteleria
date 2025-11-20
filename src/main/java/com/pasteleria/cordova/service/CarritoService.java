@@ -2,12 +2,14 @@ package com.pasteleria.cordova.service;
 
 import com.pasteleria.cordova.model.*;
 import com.pasteleria.cordova.repository.CarritoRepository;
+import com.pasteleria.cordova.repository.ClienteRepository;
 import com.pasteleria.cordova.repository.DetalleCarritoRepository;
 import com.pasteleria.cordova.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,98 +21,99 @@ public class CarritoService {
     @Autowired
     private DetalleCarritoRepository detalleCarritoRepository;
     @Autowired
-    private ProductoRepository productoRepository; // Para verificar el producto y obtener su precio/stock
+    private ClienteRepository clienteRepository;
+    @Autowired
+    private ProductoRepository productoRepository;
 
-    // Obtener el carrito de un cliente (crea uno si no existe)
     @Transactional
-    public Carrito getOrCreateCarrito(Cliente cliente) {
+    public Carrito getCarritoByCliente(Usuario usuario) {
+        Cliente cliente = clienteRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado para el usuario: " + usuario.getEmail()));
+        // Aseguramos que los detalles del carrito se carguen al obtener el carrito
         return carritoRepository.findByCliente(cliente)
                 .orElseGet(() -> {
                     Carrito nuevoCarrito = new Carrito();
                     nuevoCarrito.setCliente(cliente);
+                    nuevoCarrito.setFechaCreacion(LocalDateTime.now());
                     return carritoRepository.save(nuevoCarrito);
                 });
     }
 
-    // Añadir producto al carrito
     @Transactional
-    public DetalleCarrito agregarProductoAlCarrito(Cliente cliente, Integer productoId, int cantidad) {
+    public Carrito addProductoToCarrito(Usuario usuario, Integer productoId, Integer cantidad) {
+        Carrito carrito = getCarritoByCliente(usuario);
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado."));
-
-        if (producto.getStock() < cantidad) {
-            throw new IllegalArgumentException("No hay suficiente stock para el producto: " + producto.getNombre());
-        }
-
-        Carrito carrito = getOrCreateCarrito(cliente);
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         Optional<DetalleCarrito> existingDetalle = detalleCarritoRepository.findByCarritoAndProducto(carrito, producto);
 
-        DetalleCarrito detalle;
         if (existingDetalle.isPresent()) {
-            detalle = existingDetalle.get();
+            DetalleCarrito detalle = existingDetalle.get();
             detalle.setCantidad(detalle.getCantidad() + cantidad);
+            detalle.setSubtotal(detalle.getPrecioUnitario() * detalle.getCantidad()); // Actualizar subtotal
+            detalleCarritoRepository.save(detalle);
         } else {
-            detalle = new DetalleCarrito();
-            detalle.setCarrito(carrito);
-            detalle.setProducto(producto);
-            detalle.setCantidad(cantidad);
+            DetalleCarrito nuevoDetalle = new DetalleCarrito();
+            nuevoDetalle.setCarrito(carrito);
+            nuevoDetalle.setProducto(producto);
+            nuevoDetalle.setCantidad(cantidad);
+            nuevoDetalle.setPrecioUnitario(producto.getPrecio());
+            nuevoDetalle.setSubtotal(producto.getPrecio() * cantidad); // ASIGNAR SUBTOTAL AQUÍ
+            detalleCarritoRepository.save(nuevoDetalle);
         }
-        detalle.setSubtotal(producto.getPrecio() * detalle.getCantidad());
-        return detalleCarritoRepository.save(detalle);
+        // Recargar el carrito para asegurar que los detalles estén actualizados
+        // Considera si realmente necesitas recargar todo el carrito o solo los detalles para el retorno.
+        // Si tienes FetchType.LAZY en los detalles del Carrito, puede que necesites un findById del carrito.
+        return carritoRepository.findByCliente(carrito.getCliente()).get();
     }
 
-    // Actualizar cantidad de un producto en el carrito
     @Transactional
-    public DetalleCarrito actualizarCantidadProducto(Cliente cliente, Integer productoId, int nuevaCantidad) {
+    public Carrito updateProductoQuantity(Usuario usuario, Integer productoId, Integer cantidad) {
+        Carrito carrito = getCarritoByCliente(usuario);
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado."));
-        Carrito carrito = getOrCreateCarrito(cliente);
-        DetalleCarrito detalle = detalleCarritoRepository.findByCarritoAndProducto(carrito, producto)
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado en el carrito."));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        if (nuevaCantidad <= 0) {
+        DetalleCarrito detalle = detalleCarritoRepository.findByCarritoAndProducto(carrito, producto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado en el carrito"));
+
+        if (cantidad <= 0) {
             detalleCarritoRepository.delete(detalle);
-            return null; // Producto eliminado
+        } else {
+            detalle.setCantidad(cantidad);
+            detalle.setSubtotal(detalle.getPrecioUnitario() * detalle.getCantidad()); // Actualizar subtotal
+            detalleCarritoRepository.save(detalle);
         }
-
-        if (producto.getStock() < nuevaCantidad) {
-            throw new IllegalArgumentException("No hay suficiente stock para el producto: " + producto.getNombre());
-        }
-
-        detalle.setCantidad(nuevaCantidad);
-        detalle.setSubtotal(producto.getPrecio() * detalle.getCantidad());
-        return detalleCarritoRepository.save(detalle);
+        return carritoRepository.findByCliente(carrito.getCliente()).get();
     }
 
-    // Eliminar producto del carrito
     @Transactional
-    public void eliminarProductoDelCarrito(Cliente cliente, Integer productoId) {
+    public Carrito removeProductoFromCarrito(Usuario usuario, Integer productoId) {
+        Carrito carrito = getCarritoByCliente(usuario);
         Producto producto = productoRepository.findById(productoId)
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado."));
-        Carrito carrito = getOrCreateCarrito(cliente);
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
         DetalleCarrito detalle = detalleCarritoRepository.findByCarritoAndProducto(carrito, producto)
-                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado en el carrito."));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado en el carrito"));
+
         detalleCarritoRepository.delete(detalle);
+        return carritoRepository.findByCliente(carrito.getCliente()).get();
     }
 
-    // Obtener todos los detalles del carrito de un cliente
-    public List<DetalleCarrito> getDetallesCarrito(Cliente cliente) {
-        Carrito carrito = getOrCreateCarrito(cliente);
-        return detalleCarritoRepository.findByCarrito(carrito);
-    }
-
-    // Calcular el total del carrito
-    public double calcularTotalCarrito(Cliente cliente) {
-        return getDetallesCarrito(cliente).stream()
-                .mapToDouble(DetalleCarrito::getSubtotal)
-                .sum();
-    }
-
-    // Vaciar el carrito
     @Transactional
-    public void vaciarCarrito(Cliente cliente) {
-        Carrito carrito = getOrCreateCarrito(cliente);
+    public void clearCarrito(Usuario usuario) {
+        Carrito carrito = getCarritoByCliente(usuario);
         detalleCarritoRepository.deleteByCarrito(carrito);
+        // Para asegurar que la colección de detalles en el objeto Carrito esté vacía
+        carrito.getDetalles().clear();
+        carritoRepository.save(carrito); // Guarda el carrito sin detalles
+    }
+
+    public List<DetalleCarrito> getDetallesCarrito(Usuario usuario) {
+        Carrito carrito = getCarritoByCliente(usuario);
+        // Si los detalles del carrito están en FetchType.LAZY en la entidad Carrito,
+        // al acceder a getDetalles() aquí, se cargarán si la sesión de JPA está abierta.
+        // Asegúrate de que este método se llame dentro de un contexto transaccional
+        // o que tu configuración de OpenSessionInView esté habilitada si lo necesitas en el controlador.
+        return carrito.getDetalles();
     }
 }

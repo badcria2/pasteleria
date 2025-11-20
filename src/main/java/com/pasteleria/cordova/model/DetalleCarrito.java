@@ -29,4 +29,7 @@ public class DetalleCarrito {
 
     @Column(nullable = false)
     private Float subtotal;
+
+    @Column(nullable = false)
+    private Float precioUnitario;
 }

@@ -27,10 +27,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(userDetailsService);
-        auth.setPasswordEncoder(passwordEncoder());
-        return auth;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
     @Override
@@ -40,23 +40,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-
-                .antMatchers("/registro**", "/js/**", "/css/**", "/imagenes/**", "/","/static/**").permitAll() // Rutas públicas
-                .antMatchers("/admin/**").hasRole("ADMIN") // Rutas solo para administradores
-                .antMatchers("/cliente/**").hasRole("CLIENTE") // Rutas solo para clientes
+        http
+                .authorizeRequests()
+                .antMatchers("/", "/index", "/index.html", "/registro", "/login",
+                        "/css/**", "/js/**", "/images/**", "/uploads/**",
+                        "/Imagenes/**", "/estilos.css").permitAll()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/cliente/**").hasRole("CLIENTE")
+                .antMatchers("/carrito.html").hasRole("CLIENTE") // Asegura que solo clientes puedan usar el carrito
+                .antMatchers("/pedidos.html").hasRole("CLIENTE") // Asegura que solo clientes puedan ver y crear pedidos
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .defaultSuccessUrl("/") // Redirige a la página principal después del login exitoso
-                .and()
+
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+
                 .logout()
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
                 .permitAll();
     }
 }

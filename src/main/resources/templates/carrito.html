@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito - Pastelería Córdova</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <link rel="stylesheet" th:href="@{/css/carrito.css}"> <!-- Nuevo CSS para el carrito -->
+    <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+    <!-- CSRF Token para peticiones AJAX -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">Pastelería Córdova</div>
+        <div class="search-bar">
+            <form th:action="@{/}" method="get">
+                <input type="text" name="buscar" th:value="${param.buscar}"
+                       placeholder="Buscar productos..." id="searchInput">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+        <ul class="nav-links">
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/#productos}">Productos</a></li>
+            <li><a th:href="@{/#contacto}">Contacto</a></li>
+            <li><a th:href="@{/#opiniones}">Opiniones</a></li>
+
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}">Iniciar Sesión</a>
+            </li>
+            <li sec:authorize="isAuthenticated() and hasRole('CLIENTE')">
+                <a th:href="@{/pedidos/mis-compras}">Mis Compras</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/carrito}" class="cart-icon-link">
+                    🛒 <span id="cart-count" class="cart-count">0</span>
+                </a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="#">Hola, <span sec:authentication="name">Usuario</span>!</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="nav-logout-btn">Cerrar Sesión</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main class="carrito-main-content">
+    <h2>Mi Carrito de Compras</h2>
+
+    <div id="cart-items-container" class="cart-items-container">
+        <!-- Los ítems del carrito se insertarán aquí dinámicamente con JavaScript -->
+        <p id="empty-cart-message" class="empty-cart-message" style="text-align: center; margin-top: 2rem; display: none;">Tu carrito está vacío.</p>
+    </div>
+
+    <div class="cart-summary-card">
+        <h3>Resumen del Pedido</h3>
+        <p>Total de ítems: <span id="summary-item-count">0</span></p>
+        <p>Subtotal: S/ <span id="summary-subtotal">0.00</span></p>
+        <p class="cart-total">Total a Pagar: S/ <span id="summary-total">0.00</span></p>
+        <button id="checkout-btn" class="btn btn-primary" disabled>Proceder al Pago</button>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
+</footer>
+
+<!-- Modal de Pasarela de Pago Simulada -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Simulación de Pago</h2>
+        <p>Estás a punto de pagar S/ <span id="modal-payment-amount">0.00</span></p>
+
+        <div class="input-group">
+            <label for="cardNumber">Número de Tarjeta</label>
+            <input type="text" id="cardNumber" placeholder="**** **** **** ****" required>
+        </div>
+        <div class="input-group">
+            <label for="expiryDate">Fecha de Expiración</label>
+            <input type="text" id="expiryDate" placeholder="MM/AA" required>
+        </div>
+        <div class="input-group">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" placeholder="***" required>
+        </div>
+        <div class="input-group">
+            <label for="metodoPago">Método de Pago</label>
+            <select id="metodoPago">
+                <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Transferencia">Transferencia Bancaria</option>
+            </select>
+        </div>
+
+        <button id="confirmPaymentBtn" class="btn btn-primary">Confirmar Pago</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // *** CAMBIO CLAVE AQUÍ: La función de DOMContentLoaded ahora es async ***
+    document.addEventListener('DOMContentLoaded', async function() {
+        const CSRF_TOKEN = document.querySelector('meta[name="_csrf"]').content;
+        const CSRF_HEADER = document.querySelector('meta[name="_csrf_header"]').content;
+
+        // ----------------------------------------------------
+        // Funciones del Carrito (interactúan con el backend)
+        // ----------------------------------------------------
+
+        async function fetchCartItems() {
+            try {
+                const response = await fetch('/carrito/api');
+                if (response.ok) {
+                    return await response.json();
+                } else if (response.status === 401) {
+                    window.location.href = '/login'; // Redirigir si no está autenticado
+                    return [];
+                } else {
+                    console.error('Error al obtener el carrito del backend:', response.statusText);
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error de red al obtener el carrito:', error);
+                return [];
+            }
+        }
+
+        async function updateCartCount() {
+            const cartItems = await fetchCartItems();
+            const count = cartItems.reduce((sum, item) => sum + item.cantidad, 0);
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = count;
+            }
+        }
+
+        async function renderCartItems() {
+            const cart = await fetchCartItems();
+            const container = document.getElementById('cart-items-container');
+            const emptyMessage = document.getElementById('empty-cart-message');
+
+            container.innerHTML = ''; // Limpiar ítems existentes
+
+            if (cart.length === 0) {
+                emptyMessage.style.display = 'block';
+                // Solo añadir el mensaje si no está ya como hijo
+                if (!container.contains(emptyMessage)) {
+                    container.appendChild(emptyMessage);
+                }
+            } else {
+                emptyMessage.style.display = 'none';
+                cart.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'cart-item';
+                    itemDiv.innerHTML = `
+                        <img src="${item.imagen ? '/uploads/productos/' + item.imagen : '/imagenes/default.jpg'}" alt="${item.nombre}" class="cart-item-image" onerror="this.src='/imagenes/default.jpg'">
+                        <div class="item-details">
+                            <h4>${item.nombre}</h4>
+                            <p>Precio: S/ ${item.precio.toFixed(2)}</p>
+                        </div>
+                        <div class="item-quantity-controls">
+                            <button onclick="changeQuantity(${item.productoId}, -1)">-</button>
+                            <span>${item.cantidad}</span>
+                            <button onclick="changeQuantity(${item.productoId}, 1)">+</button>
+                        </div>
+                        <div class="item-total">
+                            S/ ${(item.precio * item.cantidad).toFixed(2)}
+                        </div>
+                        <button class="remove-item-btn" onclick="removeItem(${item.productoId})">X</button>
+                    `;
+                    container.appendChild(itemDiv);
+                });
+            }
+        }
+
+        async function updateCartSummary() {
+            const cart = await fetchCartItems();
+            const itemCount = cart.reduce((sum, item) => sum + item.cantidad, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+            document.getElementById('summary-item-count').textContent = itemCount;
+            document.getElementById('summary-subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('summary-total').textContent = subtotal.toFixed(2);
+
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.disabled = cart.length === 0;
+            }
+
+            // Actualizar monto en el modal de pago
+            document.getElementById('modal-payment-amount').textContent = subtotal.toFixed(2);
+        }
+
+        // Funciones de interacción global (para onclick en HTML)
+        window.changeQuantity = async function(productoId, delta) {
+            const cart = await fetchCartItems();
+            const item = cart.find(i => i.productoId === productoId);
+            if (!item) return;
+
+            let newQuantity = item.cantidad + delta;
+            // Asegurarse de que la cantidad no sea negativa.
+            // Si la nueva cantidad es 0 o menos, se interpretará como una eliminación.
+            if (newQuantity <= 0) {
+                // Llama a la función removeItem si la cantidad llega a 0
+                await removeItem(productoId);
+                return; // Salir después de eliminar
+            }
+
+            try {
+                const response = await fetch(`/carrito/api/update?productoId=${productoId}&cantidad=${newQuantity}`, {
+                    method: 'PUT',
+                    headers: { [CSRF_HEADER]: CSRF_TOKEN }
+                });
+                if (!response.ok) throw new Error('Error al actualizar cantidad');
+                await Promise.all([renderCartItems(), updateCartSummary(), updateCartCount()]);
+            } catch (error) {
+                console.error('Error al actualizar la cantidad:', error);
+                alert('Hubo un error al actualizar la cantidad.');
+            }
+        };
+
+        window.removeItem = async function(productoId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este producto del carrito?')) return;
+            try {
+                const response = await fetch(`/carrito/api/remove?productoId=${productoId}`, {
+                    method: 'DELETE',
+                    headers: { [CSRF_HEADER]: CSRF_TOKEN }
+                });
+                if (!response.ok) throw new Error('Error al eliminar producto');
+                await Promise.all([renderCartItems(), updateCartSummary(), updateCartCount()]);
+            } catch (error) {
+                console.error('Error al eliminar el producto:', error);
+                alert('Hubo un error al eliminar el producto.');
+            }
+        };
+
+        // ----------------------------------------------------
+        // Lógica del Modal de Pago
+        // ----------------------------------------------------
+
+        const paymentModal = document.getElementById('paymentModal');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const closeButton = document.querySelector('.close-button');
+        const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+
+        checkoutBtn.onclick = function() {
+            paymentModal.style.display = 'block';
+        };
+
+        closeButton.onclick = function() {
+            paymentModal.style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target === paymentModal) {
+                paymentModal.style.display = 'none';
+            }
+        };
+
+        // *** CAMBIO CLAVE AQUÍ: confirmPaymentBtn.onclick ahora es async ***
+        confirmPaymentBtn.onclick = async function() {
+            const metodoPago = document.getElementById('metodoPago').value;
+            // Aquí se simularía la validación de tarjeta / pago real.
+            // Para la simulación, simplemente confirmamos el pago.
+
+            try {
+                const response = await fetch(`/pedidos/api/checkout?metodoPago=${metodoPago}`, {
+                    method: 'POST',
+                    headers: { [CSRF_HEADER]: CSRF_TOKEN }
+                });
+
+                if (response.ok) {
+                    const pedidoId = await response.json();
+                    alert('¡Pago exitoso! Tu pedido ha sido realizado. ID: ' + pedidoId);
+                    paymentModal.style.display = 'none';
+                    // Redirigir a "Mis Compras" o a la página de confirmación
+                    window.location.href = '/pedidos/mis-compras';
+                } else {
+                    const errorText = await response.text();
+                    alert('Error al procesar el pago: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error de red al procesar el pago:', error);
+                alert('Error de conexión al procesar el pago.');
+            }
+        };
+
+        // Al cargar la página del carrito, se llama a estas funciones para inicializar la vista
+        // *** ESTE AWAIT ES AHORA VÁLIDO porque la función DOMContentLoaded es async ***
+        await Promise.all([renderCartItems(), updateCartSummary(), updateCartCount()]);
+    });
+</script>
+</body>
+</html>

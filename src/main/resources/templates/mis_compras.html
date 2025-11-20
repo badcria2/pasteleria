@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Compras - Pastelería Córdova</title>
+  <link rel="stylesheet" th:href="@{/css/estilos.css}">
+  <link rel="stylesheet" th:href="@{/css/mis_compras.css}"> <!-- Nuevo CSS para esta vista -->
+  <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+</head>
+<body>
+<header>
+  <nav>
+    <div class="logo">Pastelería Córdova</div>
+    <div class="search-bar">
+      <form th:action="@{/}" method="get">
+        <input type="text" name="buscar" th:value="${param.buscar}"
+               placeholder="Buscar productos..." id="searchInput">
+        <button type="submit">🔍</button>
+      </form>
+    </div>
+    <ul class="nav-links">
+      <li><a th:href="@{/}">Inicio</a></li>
+      <li><a th:href="@{/#productos}">Productos</a></li>
+      <li><a th:href="@{/#contacto}">Contacto</a></li>
+      <li><a th:href="@{/#opiniones}">Opiniones</a></li>
+
+      <li sec:authorize="!isAuthenticated()">
+        <a th:href="@{/login}">Iniciar Sesión</a>
+      </li>
+      <li sec:authorize="isAuthenticated() and hasRole('CLIENTE')">
+        <a th:href="@{/pedidos/mis-compras}">Mis Compras</a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a th:href="@{/carrito}" class="cart-icon-link">
+          🛒 <span id="cart-count" class="cart-count">0</span>
+        </a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <a href="#">Hola, <span sec:authentication="name">Usuario</span>!</a>
+      </li>
+      <li sec:authorize="isAuthenticated()">
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+          <button type="submit" class="nav-logout-btn">Cerrar Sesión</button>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<main class="mis-compras-main-content">
+  <h2>Mis Compras Realizadas</h2>
+
+  <div th:if="${errorMessage}" class="error-message">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <div th:if="${pedidos.isEmpty()}" class="empty-message">
+    <p>Aún no has realizado ninguna compra.</p>
+    <p><a th:href="@{/}" class="btn-link">Ver productos para empezar a comprar</a></p>
+  </div>
+
+  <div class="pedidos-list" th:unless="${pedidos.isEmpty()}">
+    <div class="pedido-card" th:each="pedido : ${pedidos}">
+      <div class="pedido-header">
+        <h3>Pedido #<span th:text="${pedido.id}">123</span></h3>
+        <span class="pedido-estado" th:classappend="${pedido.estado == 'ENTREGADO' ? 'estado-entregado' : (pedido.estado == 'PENDIENTE' ? 'estado-pendiente' : (pedido.estado == 'CANCELADO' ? 'estado-cancelado' : ''))}" th:text="${pedido.estado}">PENDIENTE</span>
+      </div>
+      <p>Fecha: <span th:text="${#temporals.format(pedido.fecha, 'dd/MM/yyyy')}"></span></p>
+      <p>Total: S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></p>
+      <p>Método de Pago: <span th:text="${pedido.metodoPago}"></span></p>
+
+      <div class="pedido-detalles">
+        <h4>Detalles del Pedido:</h4>
+        <ul>
+          <li th:each="detalle : ${pedido.detalles}">
+            <span th:text="${detalle.cantidad} + 'x ' + ${detalle.producto.nombre} + ' - S/ ' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 2)} + ' c/u'"></span>
+          </li>
+        </ul>
+      </div>
+      <!-- Enlace opcional para ver el detalle completo del pedido -->
+      <!-- <a th:href="@{/pedidos/{id}(id=${pedido.id})}" class="btn-ver-detalle">Ver Detalles</a> -->
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
+</footer>
+
+<script th:src="@{/js/main.js}"></script> <!-- Asegúrate de que este script cargue y actualice el carrito si es necesario -->
+
+</body>
+</html>

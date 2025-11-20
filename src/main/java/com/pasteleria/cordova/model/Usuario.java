@@ -27,16 +27,17 @@ public class Usuario {
     private String telefono;
 
     @Column(nullable = false, length = 255)
-    private String contraseña; // Encriptar siempre!
+    private String password;
+
 
     @Column(name = "fecha_registro", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
     // Constructor adicional para registro, sin ID y con contraseña encriptada (se haría en el servicio)
-    public Usuario(String nombre, String email, String telefono, String contraseña) {
+    public Usuario(String nombre, String email, String telefono, String password) {
         this.nombre = nombre;
         this.email = email;
         this.telefono = telefono;
-        this.contraseña = contraseña;
+        this.password = password;
     }
 }

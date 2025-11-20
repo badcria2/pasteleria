@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pastelería Córdova - Tradición y Calidad</title>
-    <link rel="stylesheet" href="/estilos.css">
-    <link rel="shortcut icon" href="/Imagenes/Logo.png.jpg" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 <!-- Header -->
@@ -13,8 +15,9 @@
     <nav>
         <div class="logo">Pastelería Córdova</div>
         <div class="search-bar">
-            <form action="/" method="get">
-                <input type="text" id="searchInput" name="search" placeholder="Buscar productos..." th:value="${param.search}">
+            <form th:action="@{/}" method="get">
+                <input type="text" name="buscar" th:value="${param.buscar}"
+                       placeholder="Buscar productos..." id="searchInput">
                 <button type="submit">🔍</button>
             </form>
         </div>
@@ -23,10 +26,28 @@
             <li><a href="#productos">Productos</a></li>
             <li><a href="#contacto">Contacto</a></li>
             <li><a href="#opiniones">Opiniones</a></li>
-            <li><a href="#" onclick="openModal()">Iniciar Sesión</a></li>
-            <li><a href="#" onclick="verCarrito()" style="position: relative;">
-                🛒 <span id="cart-count" class="cart-badge">0</span>
-            </a></li>
+
+            <!-- Lógica para mostrar Iniciar Sesión / Nombre de Usuario + Carrito + Cerrar Sesión -->
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}">Iniciar Sesión</a>
+            </li>
+            <li sec:authorize="isAuthenticated() and hasRole('CLIENTE')">
+                <a th:href="@{/pedidos/mis-compras}">Mis Compras</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <!-- Icono o enlace al carrito. Podrías añadir un contador de ítems aquí -->
+                <a th:href="@{/carrito}" class="cart-icon-link">
+                    🛒 <span id="cart-count" class="cart-count">0</span>
+                </a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="#">Hola, <span sec:authentication="name">Usuario</span>!</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="nav-logout-btn">Cerrar Sesión</button>
+                </form>
+            </li>
         </ul>
     </nav>
 </header>
@@ -41,60 +62,109 @@
 <!-- Productos Section -->
 <section id="productos" class="productos">
     <h2>Nuestros Productos</h2>
-    <div class="productos-grid" id="productosGrid">
 
-        <!-- Iteración de productos desde el backend -->
-        <div class="producto-card" th:each="producto : ${productos}" th:data-nombre="${producto.nombre}">
+    <!-- Filtros -->
+    <div class="filter-section" style="text-align: center; margin-bottom: 2rem;">
+
+        <!-- TODOS -->
+        <a th:href="@{/}"
+           class="filter-btn"
+           th:classappend="${categoria == null ? ' active' : ''}">
+            Todos
+        </a>
+
+        <!-- TORTAS -->
+        <a th:href="@{/(categoria='Tortas')}"
+           class="filter-btn"
+           th:classappend="${categoria == 'Tortas' ? ' active' : ''}">
+            Tortas
+        </a>
+
+        <!-- CUPCAKES -->
+        <a th:href="@{/(categoria='Croissants')}"
+           class="filter-btn"
+           th:classappend="${categoria == 'Croissants' ? ' active' : ''}">
+            Croissants
+        </a>
+
+        <!-- POSTRES -->
+        <a th:href="@{/(categoria='Postres')}"
+           class="filter-btn"
+           th:classappend="${categoria == 'Postres' ? ' active' : ''}">
+            Postres
+        </a>
+
+        <!-- PIES -->
+        <a th:href="@{/(categoria='Queques')}"
+           class="filter-btn"
+           th:classappend="${categoria == 'Queques' ? ' active' : ''}">
+            Queques
+        </a>
+
+    </div>
+
+    <div class="productos-grid" id="productosGrid" th:if="${productos != null && !productos.isEmpty()}">
+        <!-- Producto generado dinámicamente desde BD -->
+        <div class="producto-card" th:each="producto : ${productos}" th:attr="data-nombre=${producto.nombre}">
             <div class="producto-img-container">
-                <img th:src="@{'/Imagenes/' + ${producto.imagen}}" th:alt="${producto.nombre}" />
+                <img th:src="${producto.imagen != null ? '/uploads/productos/' + producto.imagen : '/Imagenes/default.jpg'}"
+                     th:alt="${producto.nombre}"
+                     onerror="this.src='/Imagenes/default.jpg'" />
             </div>
             <div class="producto-info">
                 <h3 th:text="${producto.nombre}">Nombre del Producto</h3>
-                <p th:text="${producto.descripcion}">Descripción del producto.</p>
-                <div class="precio" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 00.00</div>
-                <button class="btn btn-carrito" th:onclick="|agregarAlCarrito('${producto.nombre}', ${producto.precio})|">Agregar al Carrito</button>
+                <p th:text="${producto.descripcion}">Descripción del producto</p>
+                <div class="precio">
+                    S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}">0.00</span>
+                </div>
+                <button class="btn btn-carrito"
+                        th:attr="data-nombre=${producto.nombre},
+                 data-precio=${producto.precio},
+                 data-id=${producto.id}"
+                        onclick="agregarDesdeBoton(this)">
+                    Agregar al Carrito
+                </button>
+
             </div>
         </div>
-        <!-- Fin de la iteración -->
+    </div>
 
-        <!-- Producto de ejemplo para cuando no haya productos del backend, o si deseas mantener algunos estáticos -->
-        <div th:if="${#lists.isEmpty(productos)}" class="producto-card" data-nombre="Torta de Maracuyá" style="display: none;">
-            <div class="producto-img-container">
-                <img src="/Imagenes/Imagen1.png" alt="Torta de Maracuyá" />
-            </div>
-            <div class="producto-info">
-                <h3>Torta de Maracuyá</h3>
-                <p>Exquisita torta con crema de maracuyá tropical, perfecta para los amantes de los sabores cítricos y refrescantes</p>
-                <div class="precio">S/ 65.00</div>
-                <button class="btn btn-carrito" onclick="agregarAlCarrito('Torta de Maracuyá', 65)">Agregar al Carrito</button>
-            </div>
-        </div>
-        <!-- Puedes eliminar o adaptar los productos estáticos si ya confías en el backend -->
-
+    <!-- Si no hay productos -->
+    <div th:if="${productos == null || productos.isEmpty()}" style="text-align: center; padding: 3rem;">
+        <h3>No se encontraron productos</h3>
+        <p>Intenta con otra búsqueda o categoría</p>
     </div>
 </section>
 
 <!-- Opiniones Section -->
 <section id="opiniones" class="opiniones">
     <h2>Opiniones de Nuestros Clientes</h2>
-    <div class="opiniones-grid">
-        <div class="opinion-card">
-            <div class="estrellas">⭐⭐⭐⭐⭐</div>
-            <p>"Las mejores tortas de Lima. La calidad es excepcional y el sabor incomparable. ¡Totalmente recomendado!"</p>
-            <div class="opinion-autor">- María González</div>
-        </div>
 
-        <div class="opinion-card">
-            <div class="estrellas">⭐⭐⭐⭐⭐</div>
-            <p>"Excelente servicio y productos frescos. Los queques son deliciosos y perfectos para cualquier ocasión."</p>
-            <div class="opinion-autor">- Carlos Rodríguez</div>
-        </div>
+    <div class="opiniones-grid" th:if="${resenas != null && !resenas.isEmpty()}">
 
-        <div class="opinion-card">
-            <div class="estrellas">⭐⭐⭐⭐⭐</div>
-            <p>"La atención es muy cálida y personalizada. Los precios son justos para la calidad que ofrecen. ¡Volveré sin duda!"</p>
-            <div class="opinion-autor">- Ana Pérez</div>
+        <div class="opinion-card" th:each="resena : ${resenas}">
+            <!-- Mostrar estrellas según calificación -->
+            <div class="estrellas"
+                 th:text="${'⭐'.repeat(resena.calificacion)}">⭐⭐⭐⭐⭐</div>
+
+            <!-- Comentario -->
+            <p th:text="${resena.comentario}">Comentario del cliente</p>
+
+            <!-- Nombre del cliente -->
+            <div class="opinion-autor">
+                <span th:text="'- ' + ${resena.cliente.usuario.nombre}"></span>
+            </div>
+
+            <!-- Fecha (opcional) -->
+            <div style="font-size: 0.8rem; color: #777;"
+                 th:text="${#temporals.format(resena.fechaCreacion, 'dd/MM/yyyy')}">
+            </div>
         </div>
+    </div>
+
+    <!-- Si no hay reseñas -->
+    <div th:if="${resenas == null || resenas.isEmpty()}">
+        <p style="text-align:center; color: #555;">Aún no hay reseñas disponibles</p>
     </div>
 </section>
 
@@ -103,7 +173,7 @@
     <h2>Contáctanos</h2>
     <div class="contacto-content">
         <div class="contacto-info">
-            <h3 style="color: #ff1493; margin-bottom: 1rem;">Información de Contacto</h3>
+            <h3 style="color: #8B4513; margin-bottom: 1rem;">Información de Contacto</h3>
             <div class="info-item">
                 <span>📍</span>
                 <div>
@@ -132,13 +202,13 @@
                 <span>💬</span>
                 <div>
                     <strong>WhatsApp:</strong><br>
-                    <a href="https://wa.me/51987654321" style="color: #25d366; text-decoration: none;">Enviar mensaje</a>
+                    <a href="https://wa.me/51919714277" style="color: #25d366; text-decoration: none;">Enviar mensaje</a>
                 </div>
             </div>
         </div>
 
         <div class="contacto-form">
-            <h3 style="color: #ff1493; margin-bottom: 1rem;">Envíanos un Mensaje</h3>
+            <h3 style="color: #8B4513; margin-bottom: 1rem;">Envíanos un Mensaje</h3>
             <input type="text" placeholder="Nombre" required>
             <input type="email" placeholder="Email" required>
             <input type="tel" placeholder="Teléfono" required>
@@ -148,36 +218,6 @@
     </div>
 </section>
 
-<!-- Login Modal -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h2>Iniciar Sesión</h2>
-        <form>
-            <input type="email" placeholder="Email" required>
-            <input type="password" placeholder="Contraseña" required>
-            <button class="btn" style="width: 100%; margin-top: 1rem;">Ingresar</button>
-        </form>
-        <p style="text-align: center; margin-top: 1rem; color: #666;">
-            ¿No tienes cuenta? <a href="#" style="color: #ff1493;">Regístrate aquí</a>
-        </p>
-    </div>
-</div>
-
-<!-- Modal del Carrito -->
-<div id="carritoModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="cerrarCarrito()">&times;</span>
-        <h2>Mi Carrito de Compras</h2>
-        <div id="carrito-items"></div>
-        <div id="carrito-total" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid #ff1493;">
-            <h3>Total: S/ <span id="total-precio">0.00</span></h3>
-        </div>
-        <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="finalizarCompra()">Finalizar Compra por WhatsApp</button>
-        <button class="btn" style="width: 100%; margin-top: 0.5rem; background: #666;" onclick="vaciarCarrito()">Vaciar Carrito</button>
-    </div>
-</div>
-
 <!-- Footer -->
 <footer>
     <p>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
@@ -185,12 +225,56 @@
 </footer>
 
 <!-- Botón flotante de WhatsApp -->
-<a href="https://wa.me/51987654321?text=Pasteler%C3%ADa%20C%C3%B3rdova%2C%20me%20gustar%C3%ADa%20realizar%20un%20pedido%20personalizado"
+<a href="https://wa.me/51919714277?text=Pastelería%20Córdova%2C%20me%20gustaría%20realizar%20un%20pedido%20personalizado"
    class="whatsapp-float"
    target="_blank"
    title="Contactar por WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="60" height="60">
 </a>
-<script src="/script.js"></script>
+
+<!-- Script para inyectar variables de seguridad de Thymeleaf en el scope global de JS -->
+<!-- Cerca del final del body, ANTES de cargar main.js -->
+<script th:inline="javascript">
+    console.log("-----------------------------------------");
+    console.log("Debugging Thymeleaf Security Expressions");
+
+    // SOLUCIÓN APROPIADA para thymeleaf-extras-springsecurity5:
+    // Usa #authentication.principal.authorities para roles
+    // Usa #authentication.isAuthenticated() si tu versión de Spring Security lo soporta en #authentication
+    // Lo más seguro para hasRole es usar el .expression() o verificar roles en el principal
+
+    // 1. Acceder al nombre del usuario directamente (funciona si hay un principal)
+    var authName = /*[[${#authentication?.name}]]*/ 'N/A';
+    console.log("#authentication?.name:", authName);
+
+    // 2. Para saber si está autenticado: USAR #authentication.isAuthenticated()
+    // Esto es lo más directo y compatible.
+    var directIsAuthenticated = /*[[${#authentication.isAuthenticated()}]]*/ false;
+    console.log("#authentication.isAuthenticated() (recommended):", directIsAuthenticated);
+
+    // 3. Para verificar roles: USAR #authorization.expression() con la expresión SPEL
+    // Esta es la forma correcta para roles cuando el método directo no funciona en #authorization
+    var directIsClient = /*[[${#authorization.expression('hasRole("CLIENTE")')}]]*/ false;
+    console.log("#authorization.expression('hasRole(\"CLIENTE\")') (recommended for roles):", directIsClient);
+
+
+    // (Opcional) Tu código original con .expression(), que debería funcionar ahora para isAuthenticated
+    // ya que hasRole ya lo estabas usando.
+    // window.isAuthenticated = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false; // Esto también debería funcionar ahora
+    // window.isClient = /*[[${#authorization.expression('hasRole("CLIENTE")')}]]*/ false; // Esto ya debería funcionar
+
+
+    // A partir de los resultados de arriba, puedes asignar a tus variables globales:
+    window.isAuthenticated = directIsAuthenticated; // O #authorization.expression('isAuthenticated()')
+    window.isClient = directIsClient;
+
+    console.log("Final window.isAuthenticated:", window.isAuthenticated);
+    console.log("Final window.isClient:", window.isClient);
+
+    console.log("-----------------------------------------");
+</script>
+
+<!-- Cargar tu archivo JavaScript externo -->
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>

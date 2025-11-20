@@ -17,9 +17,10 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer clienteId;
 
-    @OneToOne(fetch = FetchType.LAZY) // Relación uno a uno con Usuario
-    @JoinColumn(name = "id", referencedColumnName = "id", nullable = false, unique = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false, unique = true)
     private Usuario usuario;
+
 
     @Column(length = 50)
     private String direccion;

@@ -833,3 +833,50 @@ footer p:hover {
         height: 50px;
     }
 }
+/* Agregar estos estilos al final de tu estilos.css existente */
+
+/* ========== FILTROS DE CATEGORÍA ========== */
+.filter-section {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);
+    text-align: center;
+}
+
+.filter-btn {
+    display: inline-block;
+    border: 2px solid var(--color-beige);
+    background: white;
+    color: var(--color-marron);
+    border-radius: 20px;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+    margin: 0.25rem;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: var(--color-naranja);
+    color: white;
+    border-color: var(--color-naranja);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(232, 149, 108, 0.4);
+}
+
+/* ========== AJUSTES PARA FORMULARIO DE BÚSQUEDA ========== */
+.search-bar form {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.search-bar form input {
+    flex: 1;
+}
+
+.search-bar form button {
+    flex-shrink: 0;
+}

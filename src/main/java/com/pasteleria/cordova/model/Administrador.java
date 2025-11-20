@@ -18,6 +18,7 @@ public class Administrador {
     private Integer adminId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id", nullable = false, unique = true)
+    // Cambiamos el nombre de la columna en la tabla 'administrador' a 'usuario_id'
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false, unique = true)
     private Usuario usuario;
 }

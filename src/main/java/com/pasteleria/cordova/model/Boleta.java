@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "boleta")
@@ -22,7 +23,10 @@ public class Boleta {
     private Pedido pedido;
 
     @Column(name = "fechaEmision", nullable = false)
-    private LocalDate fechaEmision;
+    private LocalDateTime fechaEmision = LocalDateTime.now();
+
+    @Column(nullable = false, length = 100)
+    private String numeroBoleta;
 
     @Column(nullable = false)
     private Float subtotal;

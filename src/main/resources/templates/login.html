@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Pastelería Córdova</title>
+
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+</head>
+
+<body class="login-body">
+
+<header>
+    <nav>
+        <div class="logo">Pastelería Córdova</div>
+        <div class="search-bar">
+            <form th:action="@{/}" method="get">
+                <input type="text" name="buscar" th:value="${param.buscar}"
+                       placeholder="Buscar productos..." id="searchInput">
+                <button type="submit">🔍</button>
+            </form>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#productos">Productos</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#opiniones">Opiniones</a></li>
+
+            <!-- Lógica para mostrar Iniciar Sesión / Nombre de Usuario + Carrito + Cerrar Sesión -->
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}">Iniciar Sesión</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <!-- Icono o enlace al carrito. Podrías añadir un contador de ítems aquí -->
+                <a th:href="@{/carrito}" class="cart-icon-link">
+                    🛒 <span id="cart-count" class="cart-count">0</span>
+                </a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="#">Hola, <span sec:authentication="name">Usuario</span>!</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="nav-logout-btn">Cerrar Sesión</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<section class="login-section">
+    <div class="login-card">
+
+        <h2>Iniciar Sesión</h2>
+        <p class="login-subtitle">Bienvenido de nuevo</p>
+
+        <!-- Mensaje de error -->
+        <p th:if="${error}" class="error-msg">Credenciales incorrectas</p>
+
+        <form th:action="@{/login}" method="post">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="username" placeholder="Ingresa tu email" required>
+            </div>
+
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" name="password" placeholder="Ingresa tu contraseña" required>
+            </div>
+
+            <button type="submit" class="btn-login">Ingresar</button>
+        </form>
+
+        <p class="login-register">
+            ¿No tienes una cuenta?
+            <a th:href="@{/registro}">Crear cuenta</a>
+        </p>
+        <div th:if="${loginError}" style="color:red; margin-top:10px;">
+            <p th:text="${loginError}"></p>
+        </div>
+
+    </div>
+</section>
+
+</body>
+</html>

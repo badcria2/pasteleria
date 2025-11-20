@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -34,7 +35,7 @@ public class BoletaService {
 
         Boleta boleta = new Boleta();
         boleta.setPedido(pedido);
-        boleta.setFechaEmision(LocalDate.now());
+        boleta.setFechaEmision(LocalDateTime.now());
 
         double subtotal = pedido.getTotal() / (1 + IGV_RATE); // Asumiendo que el total del pedido ya incluye IGV
         double igv = pedido.getTotal() - subtotal;

@@ -1,0 +1,282 @@
+/* estilos.css ya debería tener estilos generales */
+
+.carrito-main-content {
+    max-width: 900px;
+    margin: 4rem auto 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.carrito-main-content h2 {
+    text-align: center;
+    color: #8B4513;
+    margin-bottom: 2.5rem;
+    font-size: 2.2rem;
+}
+
+.cart-items-container {
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.item-details h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.item-details p {
+    margin: 0.2rem 0 0 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.item-quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item-quantity-controls button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.item-quantity-controls button:hover {
+    background-color: #e0e0e0;
+}
+
+.item-total {
+    font-weight: bold;
+    color: #8B4513;
+    min-width: 80px; /* Para alinear el total */
+    text-align: right;
+}
+
+.remove-item-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+}
+
+.remove-item-btn:hover {
+    background-color: #c82333;
+}
+
+.empty-cart-message {
+    font-style: italic;
+    color: #777;
+    margin-top: 2rem;
+}
+
+.cart-summary-card {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.cart-summary-card h3 {
+    color: #8B4513;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.cart-summary-card p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+    color: #444;
+}
+
+.cart-summary-card p.cart-total {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+    border-top: 1px dashed #ccc;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+.btn-primary:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Estilos para el contador del carrito en el header */
+.cart-icon-link {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: #dc3545; /* Rojo para el contador */
+    color: white;
+    border-radius: 50%;
+    padding: 0.2em 0.5em;
+    font-size: 0.7em;
+    line-height: 1;
+    text-align: center;
+    min-width: 1.5em;
+    box-sizing: border-box;
+}
+
+/* Estilo para el botón de logout */
+.nav-logout-btn {
+    background: none;
+    border: none;
+    color: #fff; /* Asegúrate de que coincida con el color de tus otros enlaces */
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-logout-btn:hover {
+    text-decoration: underline;
+}
+/* ... (CSS existente) ... */
+
+/* Estilos para la imagen del producto en el carrito */
+.cart-item-image {
+    width: 60px; /* Tamaño fijo */
+    height: 60px;
+    object-fit: cover; /* Recorta la imagen para que encaje */
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    text-align: center;
+    color: #8B4513;
+    margin-bottom: 1.5rem;
+}
+
+.modal-content p {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-content .input-group {
+    margin-bottom: 1rem;
+}
+
+.modal-content .input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.modal-content .input-group input,
+.modal-content .input-group select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-content .btn-primary {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 12px;
+    font-size: 1.1rem;
+}

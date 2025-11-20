@@ -70,4 +70,15 @@ public class ResenaService {
     public void deleteResena(Integer resenaId) {
         resenaRepository.deleteById(resenaId);
     }
+
+    public List<Resena> obtenerResenasAprobadas() {
+        return resenaRepository.findByAprobadaOrderByFechaCreacionDesc(true);
+    }
+    public List<Resena> getResenasAprobadas() {
+        return resenaRepository.findAllApprovedWithClienteAndUsuarioAndProducto();
+    }
+
+
+
+
 }

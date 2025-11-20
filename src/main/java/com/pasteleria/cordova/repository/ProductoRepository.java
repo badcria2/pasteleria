@@ -11,4 +11,7 @@ import java.util.List;
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     // Método para buscar productos por nombre o descripción, ignorando mayúsculas/minúsculas
     List<Producto> findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(String nombre, String descripcion);
+
+    List<Producto> findByCategoria(String categoria);
+
 }

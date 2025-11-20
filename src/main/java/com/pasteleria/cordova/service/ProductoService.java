@@ -34,6 +34,9 @@ public class ProductoService {
     public List<Producto> searchProductos(String searchTerm) {
         return productoRepository.findByNombreContainingIgnoreCaseOrDescripcionContainingIgnoreCase(searchTerm, searchTerm);
     }
+    public List<Producto> findByCategoria(String categoria) {
+        return productoRepository.findByCategoria(categoria);
+    }
 
     // Otros métodos de negocio para productos
 }

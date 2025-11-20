@@ -34,7 +34,7 @@ public class Pedido {
     @Column(name = "metodoPago", length = 50)
     private String metodoPago;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DetallePedido> detalles;
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)

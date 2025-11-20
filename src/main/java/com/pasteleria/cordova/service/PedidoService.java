@@ -1,17 +1,18 @@
 package com.pasteleria.cordova.service;
 
-import com.google.common.base.Preconditions; // Ejemplo de uso de Guava
 import com.pasteleria.cordova.model.*;
-import com.pasteleria.cordova.repository.DetallePedidoRepository;
-import com.pasteleria.cordova.repository.PedidoRepository;
-import com.pasteleria.cordova.repository.ProductoRepository;
+import com.pasteleria.cordova.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
@@ -21,88 +22,87 @@ public class PedidoService {
     @Autowired
     private DetallePedidoRepository detallePedidoRepository;
     @Autowired
-    private CarritoService carritoService;
+    private CarritoService carritoService; // Para interactuar con el carrito
     @Autowired
-    private ProductoService productoService;
+    private ClienteRepository clienteRepository;
     @Autowired
-    private BoletaService boletaService; // Para generar la boleta automáticamente
+    private BoletaRepository boletaRepository; // Si usas la entidad Boleta
+    @Autowired
+    private ProductoRepository productoRepository; // Para actualizar el stock
 
     @Transactional
-    public Pedido crearPedidoDesdeCarrito(Cliente cliente, String metodoPago) {
-        Preconditions.checkNotNull(cliente, "El cliente no puede ser nulo."); // Ejemplo de Guava
-        Preconditions.checkArgument(!carritoService.getDetallesCarrito(cliente).isEmpty(), "El carrito está vacío.");
-
-        List<DetalleCarrito> detallesCarrito = carritoService.getDetallesCarrito(cliente);
-
-        Pedido pedido = new Pedido();
-        pedido.setCliente(cliente);
-        pedido.setFecha(LocalDate.now());
-        pedido.setEstado("PENDIENTE"); // Estado inicial del pedido
-        pedido.setMetodoPago(metodoPago);
-
-        Pedido savedPedido = pedidoRepository.save(pedido); // Primero guardamos el pedido para obtener su ID
-
-        Float totalPedido = 0.0f;
-
-        for (DetalleCarrito dc : detallesCarrito) {
-            Producto producto = dc.getProducto();
-
-            // Verificar stock antes de confirmar el pedido
-            if (producto.getStock() < dc.getCantidad()) {
-                throw new IllegalStateException("Stock insuficiente para el producto: " + producto.getNombre());
-            }
-
-            // Reducir stock del producto
-            producto.setStock(producto.getStock() - dc.getCantidad());
-            productoService.saveProducto(producto); // Actualizar el producto en la BD
-
-            DetallePedido dp = new DetallePedido();
-            dp.setPedido(savedPedido);
-            dp.setProducto(producto);
-            dp.setCantidad(dc.getCantidad());
-            dp.setPrecioUnitario(producto.getPrecio());
-            dp.setSubTotal(dc.getSubtotal());
-            detallePedidoRepository.save(dp);
-
-            totalPedido += dc.getSubtotal();
+    public Pedido crearPedidoDesdeCarrito(Usuario usuario, String metodoPago) {
+        // 1. Obtener el carrito del cliente con sus detalles
+        Carrito carrito = carritoService.getCarritoByCliente(usuario); // Este ya carga los detalles
+        if (carrito.getDetalles().isEmpty()) {
+            throw new RuntimeException("El carrito del cliente está vacío, no se puede crear un pedido.");
         }
 
-        savedPedido.setTotal(totalPedido);
-        pedidoRepository.save(savedPedido); // Actualizar el total del pedido
+        // 2. Crear el nuevo Pedido
+        Pedido nuevoPedido = new Pedido();
+        Cliente cliente = clienteRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado para el usuario: " + usuario.getEmail()));
+        nuevoPedido.setCliente(cliente);
+        nuevoPedido.setFecha(LocalDate.now());
 
-        // Generar boleta automáticamente al crear el pedido
-        boletaService.generarBoletaParaPedido(savedPedido);
+        nuevoPedido.setEstado("PENDIENTE"); // O el estado inicial que desees
+        nuevoPedido.setMetodoPago(metodoPago);
 
-        carritoService.vaciarCarrito(cliente); // Vaciar el carrito después de crear el pedido
-        return savedPedido;
+        Float totalPedido = 0.0f;
+        List<DetallePedido> detallesDelPedido = new ArrayList<>();
+
+        // 3. Convertir DetalleCarrito a DetallePedido y calcular subtotal
+        for (DetalleCarrito dc : carrito.getDetalles()) {
+            DetallePedido dp = new DetallePedido();
+            dp.setPedido(nuevoPedido); // Asignar el pedido al detalle
+            dp.setProducto(dc.getProducto());
+            dp.setCantidad(dc.getCantidad());
+            dp.setPrecioUnitario(dc.getPrecioUnitario());
+
+            // *** ¡AQUÍ ESTÁ LA CLAVE PARA ELIMINAR EL ERROR! ***
+            Float subTotalDetalle = dc.getPrecioUnitario() * dc.getCantidad();
+            dp.setSubTotal(subTotalDetalle); // Asignar el subTotal calculado
+
+            detallesDelPedido.add(dp);
+            totalPedido += subTotalDetalle;
+        }
+
+        nuevoPedido.setTotal(totalPedido); // Asignar el total al pedido principal
+        nuevoPedido.setDetalles(detallesDelPedido); // Asignar los detalles al pedido
+
+        // 4. Guardar el Pedido (esto debería guardar también los DetallePedido debido a CascadeType.ALL)
+        Pedido pedidoGuardado = pedidoRepository.save(nuevoPedido);
+
+        // 5. Limpiar el carrito después de crear el pedido
+        carritoService.clearCarrito(usuario);
+
+        return pedidoGuardado;
     }
 
-    public List<Pedido> findPedidosByCliente(Cliente cliente) {
-        return pedidoRepository.findByCliente(cliente);
-    }
 
-    public Optional<Pedido> findById(Integer pedidoId) {
-        return pedidoRepository.findById(pedidoId);
-    }
-
-    public List<DetallePedido> findDetallesByPedido(Pedido pedido) {
-        return detallePedidoRepository.findByPedido(pedido);
-    }
-
-    public List<Pedido> findAllPedidos() {
-        return pedidoRepository.findAll();
-    }
-
-    // Actualizar el estado de un pedido (para el administrador)
     @Transactional
     public Pedido actualizarEstadoPedido(Integer pedidoId, String nuevoEstado) {
         Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado."));
-
-        // Aquí podrías agregar lógica de validación para los estados
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
         pedido.setEstado(nuevoEstado);
         return pedidoRepository.save(pedido);
     }
 
-    // Otros métodos de negocio para pedidos
+    public List<Pedido> getPedidosByCliente(Usuario usuario) {
+        Cliente cliente = clienteRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado para el usuario: " + usuario.getEmail()));
+        return pedidoRepository.findByClienteOrderByFechaDesc(cliente);
+    }
+
+    public Optional<Pedido> getPedidoById(Integer pedidoId) {
+        return pedidoRepository.findById(pedidoId);
+    }
+
+    @Transactional // Es crucial que este método sea transaccional para que el JOIN FETCH funcione
+    public List<Pedido> getPedidosByClienteWithDetalles(Usuario usuario) {
+        Cliente cliente = clienteRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado para el usuario: " + usuario.getEmail()));
+        // Usamos el nuevo método con JOIN FETCH
+        return pedidoRepository.findByClienteWithDetallesAndProductosOrderByFechaPedidoDesc(cliente);
+    }
 }

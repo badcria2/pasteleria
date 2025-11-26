@@ -44,7 +44,7 @@ public class CarritoController {
         model.addAttribute("carrito", carrito);
         model.addAttribute("detallesCarrito", carrito.getDetalles());
 
-        return "carrito";
+        return "cliente/carrito";
     }
 
     // API para obtener los detalles del carrito (útil para JS)

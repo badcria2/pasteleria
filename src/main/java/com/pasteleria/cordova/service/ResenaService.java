@@ -78,7 +78,33 @@ public class ResenaService {
         return resenaRepository.findAllApprovedWithClienteAndUsuarioAndProducto();
     }
 
+    // =================== MÉTODOS PARA CLIENTES ===================
+    
+    /**
+     * Verificar si un cliente ya escribió una reseña para un producto específico
+     */
+    public boolean clienteYaReseno(Integer clienteId, Integer productoId) {
+        return resenaRepository.existsByClienteClienteIdAndProductoId(clienteId, productoId);
+    }
 
+    /**
+     * Obtener reseñas de un cliente específico
+     */
+    public List<Resena> getResenasByCliente(Integer clienteId) {
+        return resenaRepository.findByClienteClienteIdOrderByFechaCreacionDesc(clienteId);
+    }
 
+    /**
+     * Guardar una reseña (usado por clientes)
+     */
+    public Resena guardarResena(Resena resena) {
+        return resenaRepository.save(resena);
+    }
 
+    /**
+     * Obtener una reseña específica de un cliente para un producto
+     */
+    public Optional<Resena> getResenaByClienteAndProducto(Integer clienteId, Integer productoId) {
+        return resenaRepository.findByClienteClienteIdAndProductoId(clienteId, productoId);
+    }
 }

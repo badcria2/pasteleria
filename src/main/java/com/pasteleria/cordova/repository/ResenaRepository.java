@@ -23,5 +23,28 @@ public interface ResenaRepository extends JpaRepository<Resena, Integer> {
             "JOIN FETCH r.producto p " +
             "WHERE r.aprobada = true")
     List<Resena> findAllApprovedWithClienteAndUsuarioAndProducto();
+    
+    // Métodos para notificaciones
+    List<Resena> findByAprobadaFalseOrderByFechaCreacionDesc();
+    List<Resena> findTop10ByOrderByFechaCreacionDesc();
+    int countByAprobadaFalse();
+
+    // =================== MÉTODOS PARA CLIENTES ===================
+    
+    /**
+     * Verificar si existe una reseña de un cliente para un producto específico
+     */
+    boolean existsByClienteClienteIdAndProductoId(Integer clienteId, Integer productoId);
+    
+    /**
+     * Obtener reseñas de un cliente específico ordenadas por fecha de creación
+     */
+    List<Resena> findByClienteClienteIdOrderByFechaCreacionDesc(Integer clienteId);
+    
+    /**
+     * Obtener reseña específica de un cliente para un producto
+     */
+    @Query("SELECT r FROM Resena r WHERE r.cliente.clienteId = ?1 AND r.producto.id = ?2")
+    java.util.Optional<Resena> findByClienteClienteIdAndProductoId(Integer clienteId, Integer productoId);
 
 }

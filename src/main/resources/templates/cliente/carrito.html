@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito - PastelerÃ­a CÃ³rdova</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <link rel="stylesheet" th:href="@{/css/carrito.css}"> <!-- Nuevo CSS para el carrito -->
+    <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+    <!-- CSRF Token para peticiones AJAX -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">PastelerÃ­a CÃ³rdova</div>
+        <div class="search-bar">
+            <form th:action="@{/}" method="get">
+                <input type="text" name="buscar" th:value="${param.buscar}"
+                       placeholder="Buscar productos..." id="searchInput">
+                <button type="submit">ðŸ”</button>
+            </form>
+        </div>
+        <ul class="nav-links">
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/#productos}">Productos</a></li>
+            <li><a th:href="@{/#contacto}">Contacto</a></li>
+            <li><a th:href="@{/#opiniones}">Opiniones</a></li>
+
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}">Iniciar SesiÃ³n</a>
+            </li>
+            <li sec:authorize="isAuthenticated() and hasRole('CLIENTE')">
+                <a th:href="@{/pedidos/mis-compras}">Mis Compras</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/carrito}" class="cart-icon-link">
+                    ðŸ›’ <span id="cart-count" class="cart-count">0</span>
+                </a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a href="#">Hola, <span sec:authentication="name">Usuario</span>!</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="nav-logout-btn">Cerrar SesiÃ³n</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main class="carrito-main-content">
+    <h2>Mi Carrito de Compras</h2>
+
+    <div id="cart-items-container" class="cart-items-container">
+        <!-- Los Ã­tems del carrito se insertarÃ¡n aquÃ­ dinÃ¡micamente con JavaScript -->
+        <p id="empty-cart-message" class="empty-cart-message" style="text-align: center; margin-top: 2rem; display: none;">Tu carrito estÃ¡ vacÃ­o.</p>
+    </div>
+
+    <div class="cart-summary-card">
+        <h3>Resumen del Pedido</h3>
+        <p>Total de Ã­tems: <span id="summary-item-count">0</span></p>
+        <p>Subtotal: S/ <span id="summary-subtotal">0.00</span></p>
+        <p>Costo de EnvÃ­o: S/ <span id="summary-shipping-cost">0.00</span></p> <!-- Nuevo -->
+        <p class="cart-total">Total a Pagar: S/ <span id="summary-total">0.00</span></p>
+        <button id="checkout-btn" class="btn btn-primary" disabled>Proceder al Pago</button>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 PastelerÃ­a CÃ³rdova. Todos los derechos reservados.</p>
+</footer>
+
+<!-- Modal de Pasarela de Pago Simulada -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>SimulaciÃ³n de Pago</h2>
+        <p>EstÃ¡s a punto de pagar S/ <span id="modal-payment-amount">0.00</span></p>
+
+        <div class="input-group">
+            <label for="direccionEnvio">DirecciÃ³n de EnvÃ­o</label>
+            <input type="text" id="direccionEnvio" placeholder="Ej: Av. Principal 123, Miraflores" required>
+        </div>
+        <div class="input-group">
+            <label for="cardNumber">NÃºmero de Tarjeta</label>
+            <input type="text" id="cardNumber" placeholder="**** **** **** ****" required>
+        </div>
+        <div class="input-group">
+            <label for="expiryDate">Fecha de ExpiraciÃ³n</label>
+            <input type="text" id="expiryDate" placeholder="MM/AA" required>
+        </div>
+        <div class="input-group">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" placeholder="***" required>
+        </div>
+        <div class="input-group">
+            <label for="metodoPago">MÃ©todo de Pago</label>
+            <select id="metodoPago">
+                <option value="Tarjeta">Tarjeta de CrÃ©dito/DÃ©bito</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Transferencia">Transferencia Bancaria</option>
+            </select>
+        </div>
+
+        <button id="confirmPaymentBtn" class="btn btn-primary">Confirmar Pago</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', async function() {
+        const CSRF_TOKEN = document.querySelector('meta[name="_csrf"]').content;
+        const CSRF_HEADER = document.querySelector('meta[name="_csrf_header"]').content;
+
+        let currentShippingCost = 0; // Variable para almacenar el costo de envÃ­o actual
+
+        // FunciÃ³n para calcular el costo de envÃ­o (ejemplo simple)
+        function calculateShippingCost(address) {
+            // Implementa tu lÃ³gica de cÃ¡lculo aquÃ­.
+            // Por ejemplo, un costo fijo, o basado en la longitud de la direcciÃ³n, o un mapa de zonas.
+            if (!address || address.trim() === '') {
+                return 0; // Sin costo si no hay direcciÃ³n
+            }
+            // Ejemplo: Costo de envÃ­o de S/ 5 si la direcciÃ³n contiene "Miraflores", S/ 10 para otros
+            if (address.toLowerCase().includes('miraflores')) {
+                return 5.00;
+            } else if (address.toLowerCase().includes('san isidro')) {
+                return 7.50;
+            } else {
+                return 10.00;
+            }
+        }
+
+        async function fetchCartItems() {
+            try {
+                const response = await fetch('/carrito/api');
+                if (response.ok) {
+                    return await response.json();
+                } else if (response.status === 401) {
+                    window.location.href = '/login';
+                    return [];
+                } else {
+                    console.error('Error al obtener el carrito del backend:', response.statusText);
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error de red al obtener el carrito:', error);
+                return [];
+            }
+        }
+
+        async function updateCartCount() {
+            const cartItems = await fetchCartItems();
+            const count = cartItems.reduce((sum, item) => sum + item.cantidad, 0);
+            const cartCountElement = document.getElementById('cart-count');
+            if (cartCountElement) {
+                cartCountElement.textContent = count;
+            }
+        }
+
+        async function renderCartItems() {
+            const cart = await fetchCartItems();
+            const container = document.getElementById('cart-items-container');
+            const emptyMessage = document.getElementById('empty-cart-message');
+
+            // Validar que los elementos existan
+            if (!container) {
+                console.error('Error: No se encontrÃ³ el contenedor cart-items-container');
+                return;
+            }
+
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                if (emptyMessage) {
+                    emptyMessage.style.display = 'block';
+                    if (!container.contains(emptyMessage)) {
+                        container.appendChild(emptyMessage);
+                    }
+                } else {
+                    // Crear mensaje si no existe
+                    const noItemsMsg = document.createElement('p');
+                    noItemsMsg.textContent = 'Tu carrito estÃ¡ vacÃ­o.';
+                    noItemsMsg.className = 'empty-cart-message';
+                    noItemsMsg.style.textAlign = 'center';
+                    noItemsMsg.style.marginTop = '2rem';
+                    container.appendChild(noItemsMsg);
+                }
+            } else {
+                if (emptyMessage) {
+                    emptyMessage.style.display = 'none';
+                }
+                cart.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'cart-item';
+                    itemDiv.innerHTML = `
+                        <img src="${item.imagen ? '/uploads/productos/' + item.imagen : '/imagenes/default.jpg'}" alt="${item.nombre}" class="cart-item-image" onerror="this.src='/imagenes/default.jpg'">
+                        <div class="item-details">
+                            <h4>${item.nombre}</h4>
+                            <p>Precio: S/ ${item.precio.toFixed(2)}</p>
+                        </div>
+                        <div class="item-quantity-controls">
+                            <button onclick="changeQuantity(${item.productoId}, -1)">-</button>
+                            <span>${item.cantidad}</span>
+                            <button onclick="changeQuantity(${item.productoId}, 1)">+</button>
+                        </div>
+                        <div class="item-total">
+                            S/ ${(item.precio * item.cantidad).toFixed(2)}
+                        </div>
+                        <button class="remove-item-btn" onclick="removeItem(${item.productoId})">X</button>
+                    `;
+                    container.appendChild(itemDiv);
+                });
+            }
+        }
+
+        async function updateCartSummary() {
+            const cart = await fetchCartItems();
+            const itemCount = cart.reduce((sum, item) => sum + item.cantidad, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+            // Obtener la direcciÃ³n de envÃ­o actual del campo de texto - con validaciÃ³n
+            const direccionEnvioElement = document.getElementById('direccionEnvio');
+            const direccionEnvio = direccionEnvioElement ? direccionEnvioElement.value : '';
+            currentShippingCost = calculateShippingCost(direccionEnvio); // Actualizar el costo de envÃ­o
+
+            const total = subtotal + currentShippingCost;
+
+            // Actualizar elementos con validaciÃ³n
+            const summaryItemCount = document.getElementById('summary-item-count');
+            const summarySubtotal = document.getElementById('summary-subtotal');
+            const summaryShippingCost = document.getElementById('summary-shipping-cost');
+            const summaryTotal = document.getElementById('summary-total');
+            const modalPaymentAmount = document.getElementById('modal-payment-amount');
+
+            if (summaryItemCount) summaryItemCount.textContent = itemCount;
+            if (summarySubtotal) summarySubtotal.textContent = subtotal.toFixed(2);
+            if (summaryShippingCost) summaryShippingCost.textContent = currentShippingCost.toFixed(2);
+            if (summaryTotal) summaryTotal.textContent = total.toFixed(2);
+
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.disabled = cart.length === 0;
+            }
+
+            // Actualizar monto en el modal de pago
+            if (modalPaymentAmount) modalPaymentAmount.textContent = total.toFixed(2);
+        }
+
+        window.changeQuantity = async function(productoId, delta) {
+            const cart = await fetchCartItems();
+            const item = cart.find(i => i.productoId === productoId);
+            if (!item) return;
+
+            let newQuantity = item.cantidad + delta;
+            if (newQuantity <= 0) {
+                await removeItem(productoId);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/carrito/api/update?productoId=${productoId}&cantidad=${newQuantity}`, {
+                    method: 'PUT',
+                    headers: { [CSRF_HEADER]: CSRF_TOKEN }
+                });
+                if (!response.ok) throw new Error('Error al actualizar cantidad');
+                await Promise.all([renderCartItems(), updateCartSummary(), updateCartCount()]);
+            } catch (error) {
+                console.error('Error al actualizar la cantidad:', error);
+                alert('Hubo un error al actualizar la cantidad.');
+            }
+        };
+
+        window.removeItem = async function(productoId) {
+            if (!confirm('Â¿EstÃ¡s seguro de que quieres eliminar este producto del carrito?')) return;
+            try {
+                const response = await fetch(`/carrito/api/remove?productoId=${productoId}`, {
+                    method: 'DELETE',
+                    headers: { [CSRF_HEADER]: CSRF_TOKEN }
+                });
+                if (!response.ok) throw new Error('Error al eliminar producto');
+                await Promise.all([renderCartItems(), updateCartSummary(), updateCartCount()]);
+            } catch (error) {
+                console.error('Error al eliminar el producto:', error);
+                alert('Hubo un error al eliminar el producto.');
+            }
+        };
+
+        const paymentModal = document.getElementById('paymentModal');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const closeButton = document.querySelector('.close-button');
+        const confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+        const direccionEnvioInput = document.getElementById('direccionEnvio'); // Nuevo
+
+        checkoutBtn.onclick = function() {
+            paymentModal.style.display = 'block';
+            updateCartSummary(); // Asegurarse de que el total del modal estÃ© actualizado al abrir
+        };
+
+        closeButton.onclick = function() {
+            paymentModal.style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target === paymentModal) {
+                paymentModal.style.display = 'none';
+            }
+        };
+
+        // Escuchar cambios en la direcciÃ³n de envÃ­o para recalcular el costo
+        direccionEnvioInput.addEventListener('input', updateCartSummary);
+
+        confirmPaymentBtn.onclick = async function() {
+            const metodoPago = document.getElementById('metodoPago').value;
+            const direccionEnvio = direccionEnvioInput.value.trim(); // Obtener la direcciÃ³n
+
+            if (!direccionEnvio) {
+                alert('Por favor, ingresa una direcciÃ³n de envÃ­o.');
+                return;
+            }
+
+            // El costo de envÃ­o ya estÃ¡ calculado en currentShippingCost
+            const costoEnvio = currentShippingCost;
+
+            try {
+                const response = await fetch(`/pedidos/api/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [CSRF_HEADER]: CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        metodoPago: metodoPago,
+                        direccionEnvio: direccionEnvio,
+                        costoEnvio: costoEnvio // Enviar el costo de envÃ­o calculado
+                    })
+                });
+
+                if (response.ok) {
+                    const pedidoId = await response.json();
+                    alert('Â¡Pago exitoso! Tu pedido ha sido realizado. ID: ' + pedidoId);
+                    paymentModal.style.display = 'none';
+                    window.location.href = '/pedidos/mis-compras';
+                } else {
+                    const errorText = await response.text();
+                    alert('Error al procesar el pago: ' + errorText);
+                }
+            } catch (error) {
+                console.error('Error de red al procesar el pago:', error);
+                alert('Error de conexiÃ³n al procesar el pago.');
+            }
+        };
+
+        await Promise.all([renderCartItems(), updateCartSummary(), updateCartCount()]);
+    });
+</script>
+</body>
+</html>

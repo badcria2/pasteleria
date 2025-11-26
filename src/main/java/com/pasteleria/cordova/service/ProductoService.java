@@ -38,5 +38,10 @@ public class ProductoService {
         return productoRepository.findByCategoria(categoria);
     }
 
+    // Método para obtener los productos más vendidos
+    public List<Object[]> getProductosMasVendidos(int limit) {
+        return productoRepository.findProductosMasVendidos(limit);
+    }
+
     // Otros métodos de negocio para productos
 }

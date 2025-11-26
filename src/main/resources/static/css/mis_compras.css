@@ -23,6 +23,16 @@
     border-radius: 5px;
     margin-bottom: 2rem;
 }
+
+.success-message {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: #d1edff;
+    color: #0c5460;
+    border: 1px solid #b8daff;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+}
 .empty-message p, .error-message p {
     margin: 0;
 }
@@ -78,10 +88,9 @@
 }
 
 .estado-pendiente { background-color: #ffc107; color: #343a40; } /* Amarillo */
-.estado-confirmado { background-color: #007bff; } /* Azul */
-.estado-en-reparto { background-color: #17a2b8; } /* Cian */
-.estado-entregado { background-color: #28a745; } /* Verde */
-.estado-cancelado { background-color: #dc3545; } /* Rojo */
+.estado-proceso { background-color: #17a2b8; color: white; } /* Azul cian - En Proceso */
+.estado-completado { background-color: #28a745; color: white; } /* Verde - Completado */
+.estado-cancelado { background-color: #dc3545; color: white; } /* Rojo - Cancelado */
 
 .pedido-card p {
     margin-bottom: 0.5rem;
@@ -129,6 +138,125 @@
 
 .btn-ver-detalle:hover {
     background-color: #0056b3;
+}
+
+/* =================== ESTILOS PARA SISTEMA DE RESEÑAS =================== */
+
+.productos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.producto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #8B4513;
+}
+
+.producto-info {
+    flex: 1;
+}
+
+.producto-descripcion {
+    display: block;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.3rem;
+}
+
+.producto-subtotal {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: bold;
+}
+
+.producto-actions {
+    margin-left: 1rem;
+}
+
+.resena-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.resena-status.completed {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.resena-status.pending .btn-resena {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background-color: #8B4513;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid #8B4513;
+}
+
+.resena-status.pending .btn-resena:hover {
+    background-color: #a0522d;
+    border-color: #a0522d;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
+}
+
+.resena-icon {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.resena-text {
+    white-space: nowrap;
+}
+
+/* Responsive Design para reseñas */
+@media (max-width: 768px) {
+    .producto-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+    
+    .producto-actions {
+        margin-left: 0;
+        align-self: stretch;
+    }
+    
+    .resena-status.pending .btn-resena {
+        width: 100%;
+        justify-content: center;
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* Estados adicionales para pedidos */
+.pedido-card[data-estado="COMPLETADO"] .pedido-estado {
+    background-color: #28a745 !important;
+}
+
+.pedido-card[data-estado="CANCELADO"] .pedido-estado {
+    background-color: #dc3545 !important;
+}
+
+/* Hover effects mejorados */
+.pedido-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
 }
 
 /* Puedes añadir un estilo para la vista de detalle_pedido.html si la implementas */

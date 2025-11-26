@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Fragment head no necesario para fragmentos -->
+</head>
+<body>
+
+<!-- Fragment: Notificaciones del Topbar -->
+<div th:fragment="notificaciones-topbar">
+    <!-- Nav Item - Alerts -->
+    <li class="nav-item dropdown no-arrow mx-1">
+        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-bell fa-fw"></i>
+            <!-- Counter - Alerts -->
+            <span class="badge badge-danger badge-counter" th:text="${totalNotificaciones > 0 ? totalNotificaciones : ''}" 
+                  th:style="${totalNotificaciones > 0 ? '' : 'display:none;'}"></span>
+        </a>
+        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+            <h6 class="dropdown-header bg-primary text-white">
+                Centro de Alertas
+            </h6>
+            
+            <!-- Notificaciones dinámicas -->
+            <div th:if="${#lists.isEmpty(notificacionesAlertas)}" class="dropdown-item text-center text-muted py-3">
+                <i class="fas fa-check-circle fa-2x mb-2"></i>
+                <p class="mb-0">No hay nuevas alertas</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(notificacionesAlertas)}">
+                <a th:each="notif : ${notificacionesAlertas}" 
+                   class="dropdown-item d-flex align-items-center notificacion-item" 
+                   href="#"
+                   th:data-tipo="${notif.tipo}"
+                   th:data-id="${notif.id}"
+                   th:data-url="${notif.url}"
+                   onclick="manejarClickNotificacion(this)">
+                    <div class="mr-3">
+                        <div class="icon-circle" th:class="${notif.color}">
+                            <i th:class="${notif.icono + ' text-white'}"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500" th:text="${notif.fecha}"></div>
+                        <span class="font-weight-bold" th:text="${notif.titulo}"></span>
+                        <div class="small" th:text="${notif.descripcion}"></div>
+                    </div>
+                </a>
+            </div>
+            
+            <a class="dropdown-item text-center small text-gray-500" href="/admin/pedidos">Ver todas las alertas</a>
+        </div>
+    </li>
+
+    <!-- Nav Item - Messages -->
+    <li class="nav-item dropdown no-arrow mx-1">
+        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-envelope fa-fw"></i>
+            <!-- Counter - Messages -->
+            <span class="badge badge-danger badge-counter" th:text="${totalMensajes > 0 ? totalMensajes : ''}" 
+                  th:style="${totalMensajes > 0 ? '' : 'display:none;'}"></span>
+        </a>
+        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+            <h6 class="dropdown-header bg-primary text-white">
+                Centro de Reseñas
+            </h6>
+            
+            <!-- Mensajes dinámicos (reseñas) -->
+            <div th:if="${#lists.isEmpty(notificacionesMensajes)}" class="dropdown-item text-center text-muted py-3">
+                <i class="fas fa-comments fa-2x mb-2"></i>
+                <p class="mb-0">No hay nuevas reseñas</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(notificacionesMensajes)}">
+                <a th:each="mensaje : ${notificacionesMensajes}" 
+                   class="dropdown-item d-flex align-items-center mensaje-item" 
+                   href="#"
+                   th:data-tipo="${mensaje.tipo}"
+                   th:data-id="${mensaje.id}"
+                   th:data-url="${mensaje.url}"
+                   onclick="manejarClickMensaje(this)">
+                    <div class="dropdown-list-image mr-3">
+                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
+                             style="width: 40px; height: 40px;">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <div class="status-indicator" th:class="${mensaje.aprobada ? 'bg-success' : 'bg-warning'}"></div>
+                    </div>
+                    <div class="font-weight-bold">
+                        <div class="text-truncate" th:text="${mensaje.contenido}"></div>
+                        <div class="small text-gray-500">
+                            <span th:text="${mensaje.clienteNombre}"></span> · 
+                            <span th:text="${mensaje.fechaRelativa}"></span>
+                            <span th:if="${!mensaje.aprobada}" class="badge badge-warning ml-1">Pendiente</span>
+                        </div>
+                        <div class="small text-muted">
+                            <i class="fas fa-star text-warning"></i>
+                            <span th:text="${mensaje.calificacion}"></span>/5 - 
+                            <span th:text="${mensaje.producto}"></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <a class="dropdown-item text-center small text-gray-500" href="/admin/productos">Ver todas las reseñas</a>
+        </div>
+    </li>
+</div>
+
+<!-- Fragment: JavaScript para notificaciones -->
+<div th:fragment="notificaciones-js">
+    <script>
+    // JavaScript para manejar notificaciones
+    function manejarClickNotificacion(element) {
+        event.preventDefault();
+        
+        const tipo = element.getAttribute('data-tipo');
+        const id = element.getAttribute('data-id');
+        const url = element.getAttribute('data-url');
+        
+        // Marcar como leída (opcional)
+        fetch('/api/admin/notificaciones/marcar-leida', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `tipo=${tipo}&id=${id}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Redirigir a la URL
+                window.location.href = data.redirectUrl || url;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Redirigir de todos modos
+            window.location.href = url;
+        });
+    }
+    
+    function manejarClickMensaje(element) {
+        event.preventDefault();
+        
+        const tipo = element.getAttribute('data-tipo');
+        const id = element.getAttribute('data-id');
+        const url = element.getAttribute('data-url');
+        
+        // Redirigir directamente a productos para ver reseñas
+        window.location.href = url;
+    }
+    
+    // Actualizar notificaciones cada 30 segundos (opcional)
+    setInterval(function() {
+        actualizarContadores();
+    }, 30000);
+    
+    function actualizarContadores() {
+        // Actualizar contador de alertas
+        fetch('/api/admin/notificaciones/alertas')
+            .then(response => response.json())
+            .then(data => {
+                const alertCounter = document.querySelector('#alertsDropdown .badge-counter');
+                if (alertCounter) {
+                    if (data.total > 0) {
+                        alertCounter.textContent = data.total;
+                        alertCounter.style.display = '';
+                    } else {
+                        alertCounter.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => console.error('Error actualizando alertas:', error));
+            
+        // Actualizar contador de mensajes
+        fetch('/api/admin/notificaciones/mensajes')
+            .then(response => response.json())
+            .then(data => {
+                const messageCounter = document.querySelector('#messagesDropdown .badge-counter');
+                if (messageCounter) {
+                    if (data.total > 0) {
+                        messageCounter.textContent = data.total;
+                        messageCounter.style.display = '';
+                    } else {
+                        messageCounter.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => console.error('Error actualizando mensajes:', error));
+    }
+    </script>
+</div>
+
+</body>
+</html>

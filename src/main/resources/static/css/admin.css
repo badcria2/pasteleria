@@ -340,7 +340,7 @@ body.sidebar-toggled #content-wrapper {
 }
 
 .sidebar-dark .sidebar-brand {
-  color: rgba(255, 255, 255, 0.8);
+  color: #fff !important;
 }
 
 .sidebar-dark hr.sidebar-divider {
@@ -348,31 +348,41 @@ body.sidebar-toggled #content-wrapper {
 }
 
 .sidebar-dark .sidebar-heading {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 .sidebar-dark .nav-item .nav-link {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
 }
 
 .sidebar-dark .nav-item .nav-link i {
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .sidebar-dark .nav-item .nav-link:active, .sidebar-dark .nav-item .nav-link:focus, .sidebar-dark .nav-item .nav-link:hover {
-  color: #fff;
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .sidebar-dark .nav-item .nav-link:active i, .sidebar-dark .nav-item .nav-link:focus i, .sidebar-dark .nav-item .nav-link:hover i {
-  color: #fff;
+  color: #fff !important;
 }
 
 .sidebar-dark .nav-item.active .nav-link {
-  color: #fff;
+  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 0 !important;
 }
 
 .sidebar-dark .nav-item.active .nav-link i {
-  color: #fff;
+  color: #fff !important;
 }
 
 .sidebar .sidebar-brand,
@@ -389,6 +399,8 @@ body.sidebar-toggled #content-wrapper {
   color: #d4a574;
   letter-spacing: 0.02rem;
 }
+
+
 
 /* Ensure chart cards have equal height and canvases match visually */
 .dashboard-row .card.flex-fill {

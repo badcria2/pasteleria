@@ -14,6 +14,139 @@
     
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Navbar Styles -->
+    <style>
+        /* CSS Variables matching main website */
+        :root {
+            --color-marron: #8B4513;
+            --color-marron-oscuro: #6B3410;
+            --color-marron-claro: #A0522D;
+            --color-naranja: #E8956C;
+            --color-naranja-claro: #F4A582;
+            --color-beige: #F5DEB3;
+            --color-beige-claro: #FFF8DC;
+            --color-beige-oscuro: #D2B48C;
+            --color-crema: #FFF5E6;
+        }
+        
+        /* Navbar general styling - completely transparent */
+        .navbar {
+            background: transparent !important;
+            box-shadow: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Sidebar toggle button */
+        #sidebarToggleTop {
+            color: #6c757d !important;
+        }
+        
+        #sidebarToggleTop:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        /* Alert and notification icons */
+        .navbar-nav .nav-link {
+            border-radius: 50%;
+            margin: 0 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            color: #6c757d !important;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+            color: #495057 !important;
+        }
+        
+        /* User dropdown styling - completely transparent */
+        .navbar-nav .nav-link.user-profile {
+            width: auto;
+            border-radius: 0 !important;
+            padding: 0.2rem 0.4rem !important;
+            margin-left: 1.5rem;
+            background: transparent !important;
+            border: none;
+            backdrop-filter: none;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+        
+        .navbar-nav .nav-link.user-profile:hover {
+            background: rgba(0, 0, 0, 0.02) !important;
+            border: none;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Navbar alignment */
+        .navbar .navbar-nav {
+            margin-left: auto !important;
+        }
+        
+        /* User text styling */
+        .user-profile .username {
+            color: #495057 !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-shadow: none;
+        }
+        
+        .user-profile i {
+            color: #6c757d !important;
+            opacity: 0.7;
+        }
+        
+        /* Dropdown menus */
+        .dropdown-menu {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            min-width: 200px;
+            background: white;
+        }
+        
+        .dropdown-header {
+            background: #6c757d;
+            color: white;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            margin: 0;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Dropdown items */
+        .dropdown-item {
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        /* Badge positioning */
+        .position-relative .badge {
+            font-size: 0.6rem !important;
+            padding: 0.25em 0.5em;
+            min-width: 18px;
+            height: 18px;
+        }
+        
+        /* Remove border from navbar */
+        .navbar {
+            border-bottom: none !important;
+        }
+    </style>
 </head>
 
 <body id="page-top" class="sb-admin-2">
@@ -67,6 +200,28 @@
                 </a>
             </li>
 
+            <!-- Nav Item - Gestión de Reseñas -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/resenas}">
+                    <i class="fas fa-fw fa-star"></i>
+                    <span>Gestión de Reseñas</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Reportes</div>
+
+            <!-- Nav Item - Reporte de Clientes -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/clientes}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Reporte de Clientes</span>
+                </a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
@@ -85,48 +240,14 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm"
-                     style="border-bottom: 3px solid #d4a574;">
-
-                    <!-- Sidebar Toggle (Topbar) -->
+                                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm">
+                    <!-- Sidebar Toggle -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars" style="color: #d4a574;"></i>
+                        <i class="fa fa-bars" style="color: #8B4513;"></i>
                     </button>
 
-                    <!-- Page Title and Breadcrumb - Alineado a la izquierda -->
-                    <div class="d-flex align-items-center flex-grow-1">
-                        <h1 class="h4 mb-0 font-weight-bold mr-3" style="color: #d4a574;">
-                            <i class="fas fa-clipboard-list mr-2"></i>Gestión de Pedidos
-                        </h1>
-                        <nav aria-label="breadcrumb" class="d-none d-md-block">
-                            <ol class="breadcrumb mb-0 bg-transparent p-0">
-                                <li class="breadcrumb-item">
-                                    <a href="/admin/dashboard" class="text-decoration-none" style="color: #c19660;">
-                                        <i class="fas fa-home mr-1"></i>Dashboard
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page" style="color: #d4a574;">Pedidos</li>
-                            </ol>
-                        </nav>
-                    </div>
-
-                    <!-- Topbar Search -->
-                    <div class="d-none d-sm-flex ml-auto mr-3">
-                        <form th:action="@{/admin/pedidos}" method="get" class="form-inline navbar-search">
-                            <div class="input-group">
-                                <input type="text" name="search" class="form-control bg-light border-0 small" 
-                                       placeholder="Buscar pedidos..." aria-label="Search" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit">
-                                        <i class="fas fa-search fa-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
                     <!-- Topbar Navbar -->
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ml-auto d-flex align-items-center">
                         
                         <!-- Nav Item - Search Dropdown -->
                         <li class="nav-item dropdown no-arrow d-sm-none">
@@ -135,11 +256,11 @@
                                 <i class="fas fa-search fa-fw"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search" th:action="@{/admin/pedidos}" method="get">
+                                <form class="form-inline mr-auto w-100 navbar-search">
                                     <div class="input-group">
-                                        <input type="text" name="search" class="form-control bg-light border-0 small" placeholder="Buscar pedidos..." aria-label="Search">
+                                        <input type="text" class="form-control bg-light border-0 small" placeholder="Buscar..." aria-label="Search">
                                         <div class="input-group-append">
-                                            <button class="btn btn-primary" type="submit">
+                                            <button class="btn btn-primary" type="button">
                                                 <i class="fas fa-search fa-sm"></i>
                                             </button>
                                         </div>
@@ -148,17 +269,118 @@
                             </div>
                         </li>
 
-                        <!-- Notificaciones -->
-                        <div th:replace="~{fragments/notificaciones :: notificaciones-topbar}"></div>
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <!-- Counter - Alerts -->
+                                <span class="badge badge-danger badge-counter" th:text="${totalNotificaciones > 0 ? totalNotificaciones : ''}" 
+                                      th:style="${totalNotificaciones > 0 ? '' : 'display:none;'}"></span>
+                            </a>
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header bg-primary text-white">
+                                    Centro de Alertas
+                                </h6>
+                                
+                                <!-- Notificaciones dinámicas -->
+                                <div th:if="${#lists.isEmpty(notificacionesAlertas)}" class="dropdown-item text-center text-muted py-3">
+                                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                    <p class="mb-0">No hay nuevas alertas</p>
+                                </div>
+                                
+                                <div th:unless="${#lists.isEmpty(notificacionesAlertas)}">
+                                    <a th:each="notif : ${notificacionesAlertas}" 
+                                       class="dropdown-item d-flex align-items-center notificacion-item" 
+                                       href="#"
+                                       th:data-tipo="${notif.tipo}"
+                                       th:data-id="${notif.id}"
+                                       th:data-url="${notif.url}"
+                                       onclick="manejarClickNotificacion(this)">
+                                        <div class="mr-3">
+                                            <div class="icon-circle" th:class="${notif.color}">
+                                                <i th:class="${notif.icono + ' text-white'}"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="small text-gray-500" th:text="${notif.fecha}"></div>
+                                            <span class="font-weight-bold" th:text="${notif.titulo}"></span>
+                                            <div class="small" th:text="${notif.descripcion}"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <a class="dropdown-item text-center small text-gray-500" href="/admin/pedidos">Ver todas las alertas</a>
+                            </div>
+                        </li>
+
+                        <!-- Nav Item - Messages -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-envelope fa-fw"></i>
+                                <!-- Counter - Messages -->
+                                <span class="badge badge-danger badge-counter" th:text="${totalMensajes > 0 ? totalMensajes : ''}" 
+                                      th:style="${totalMensajes > 0 ? '' : 'display:none;'}"></span>
+                            </a>
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+                                <h6 class="dropdown-header bg-primary text-white">
+                                    Centro de Reseñas
+                                </h6>
+                                
+                                <!-- Mensajes dinámicos (reseñas) -->
+                                <div th:if="${#lists.isEmpty(notificacionesMensajes)}" class="dropdown-item text-center text-muted py-3">
+                                    <i class="fas fa-comments fa-2x mb-2"></i>
+                                    <p class="mb-0">No hay nuevas reseñas</p>
+                                </div>
+                                
+                                <div th:unless="${#lists.isEmpty(notificacionesMensajes)}">
+                                    <a th:each="mensaje : ${notificacionesMensajes}" 
+                                       class="dropdown-item d-flex align-items-center mensaje-item" 
+                                       href="#"
+                                       th:data-tipo="${mensaje.tipo}"
+                                       th:data-id="${mensaje.id}"
+                                       th:data-url="${mensaje.url}"
+                                       onclick="manejarClickMensaje(this)">
+                                        <div class="dropdown-list-image mr-3">
+                                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                            <div class="status-indicator" th:class="${mensaje.aprobada ? 'bg-success' : 'bg-warning'}"></div>
+                                        </div>
+                                        <div class="font-weight-bold">
+                                            <div class="text-truncate" th:text="${mensaje.contenido}"></div>
+                                            <div class="small text-gray-500">
+                                                <span th:text="${mensaje.clienteNombre}"></span> · 
+                                                <span th:text="${mensaje.fechaRelativa}"></span>
+                                                <span th:if="${!mensaje.aprobada}" class="badge badge-warning ml-1">Pendiente</span>
+                                            </div>
+                                            <div class="small text-muted">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <span th:text="${mensaje.calificacion}"></span>/5 - 
+                                                <span th:text="${mensaje.producto}"></span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <a class="dropdown-item text-center small text-gray-500" href="/admin/productos">Ver todas las reseñas</a>
+                            </div>
+                        </li>
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        <li class="nav-item dropdown no-arrow ms-auto">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center user-profile" href="#" id="userDropdown" role="button"
                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Jorge Campos</span>
-                                <img class="img-profile rounded-circle" src="https://cdn-icons-png.flaticon.com/512/2206/2206368.png" alt="Admin">
+                                <img class="rounded-circle me-2" 
+                                     th:src="'https://ui-avatars.com/api/?name=' + ${#strings.replace(#authentication.name, ' ', '+')} + '&background=8B4513&color=ffffff&size=28&bold=true'" 
+                                     alt="Usuario" 
+                                     style="width: 28px; height: 28px; box-shadow: 0 2px 8px rgba(139,69,19,0.2);">
+                                <span class="d-none d-sm-inline username" th:text="${#authentication.name}">Usuario</span>
+                                <i class="fas fa-chevron-down ms-2" style="font-size: 0.7rem; color: #8B4513; opacity: 0.7;"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -169,6 +391,10 @@
                                 <a class="dropdown-item" href="#">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Configuración
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Registro de actividad
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <form th:action="@{/logout}" method="post" class="m-0">
@@ -190,7 +416,7 @@
 <section>
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Gestión de Pedidos</h1>
+        <h1 class="h3 mb-0 text-gray-800">Pedidos</h1>
         <a th:href="@{/admin/productos}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-box fa-sm text-white-50"></i> Ver Productos
         </a>

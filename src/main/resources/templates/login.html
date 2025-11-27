@@ -56,6 +56,12 @@
         <h2>Iniciar Sesión</h2>
         <p class="login-subtitle">Bienvenido de nuevo</p>
 
+        <!-- Mensaje de éxito del registro -->
+        <div th:if="${successMessage}" class="success-msg" style="background: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            <i style="margin-right: 8px;">✓</i>
+            <span th:text="${successMessage}"></span>
+        </div>
+
         <!-- Mensaje de error -->
         <p th:if="${error}" class="error-msg">Credenciales incorrectas</p>
 

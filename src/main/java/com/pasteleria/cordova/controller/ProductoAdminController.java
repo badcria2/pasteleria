@@ -5,6 +5,9 @@ import com.pasteleria.cordova.model.Producto;
 import com.pasteleria.cordova.repository.PedidoRepository;
 import com.pasteleria.cordova.service.PedidoService;
 import com.pasteleria.cordova.service.ProductoService;
+import com.pasteleria.cordova.service.NotificacionService;
+
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +35,9 @@ public class ProductoAdminController {
 	@Autowired
 	private PedidoRepository pedidoRepository;
 
+	@Autowired
+	private NotificacionService notificacionService;
+
 
 
 	// Listar productos
@@ -47,6 +53,13 @@ public class ProductoAdminController {
 		}
 		
 		model.addAttribute("productos", productos);
+		
+		// Agregar notificaciones para la topbar
+		List<Map<String, Object>> notificacionesAlertas = notificacionService.obtenerNotificacionesAlertas();
+		List<Map<String, Object>> notificacionesMensajes = notificacionService.obtenerNotificacionesMensajes();
+		model.addAttribute("notificacionesAlertas", notificacionesAlertas);
+		model.addAttribute("notificacionesMensajes", notificacionesMensajes);
+		
 		return "admin/productos";
 	}
 
@@ -54,6 +67,13 @@ public class ProductoAdminController {
 	@GetMapping("/productos/nuevo")
 	public String nuevoProductoForm(Model model) {
 		model.addAttribute("producto", new Producto());
+		
+		// Agregar notificaciones para la topbar
+		List<Map<String, Object>> notificacionesAlertas = notificacionService.obtenerNotificacionesAlertas();
+		List<Map<String, Object>> notificacionesMensajes = notificacionService.obtenerNotificacionesMensajes();
+		model.addAttribute("notificacionesAlertas", notificacionesAlertas);
+		model.addAttribute("notificacionesMensajes", notificacionesMensajes);
+		
 		return "admin/producto-form";
 	}
 
@@ -96,6 +116,13 @@ public class ProductoAdminController {
 			return "redirect:/admin/productos";
 		}
 		model.addAttribute("producto", producto);
+		
+		// Agregar notificaciones para la topbar
+		List<Map<String, Object>> notificacionesAlertas = notificacionService.obtenerNotificacionesAlertas();
+		List<Map<String, Object>> notificacionesMensajes = notificacionService.obtenerNotificacionesMensajes();
+		model.addAttribute("notificacionesAlertas", notificacionesAlertas);
+		model.addAttribute("notificacionesMensajes", notificacionesMensajes);
+		
 		return "admin/producto-form";
 	}
 
@@ -128,6 +155,12 @@ public class ProductoAdminController {
 		model.addAttribute("totalEnProceso", pedidoService.countPedidosByEstado("EN_PROCESO"));
 		model.addAttribute("totalCompletados", pedidoService.countPedidosByEstado("COMPLETADO"));
 		model.addAttribute("totalCancelados", pedidoService.countPedidosByEstado("CANCELADO"));
+		
+		// Agregar notificaciones para la topbar
+		List<Map<String, Object>> notificacionesAlertas = notificacionService.obtenerNotificacionesAlertas();
+		List<Map<String, Object>> notificacionesMensajes = notificacionService.obtenerNotificacionesMensajes();
+		model.addAttribute("notificacionesAlertas", notificacionesAlertas);
+		model.addAttribute("notificacionesMensajes", notificacionesMensajes);
 		
 		return "admin/pedidos";
 	}

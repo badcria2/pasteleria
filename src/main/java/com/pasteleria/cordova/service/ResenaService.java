@@ -56,7 +56,7 @@ public class ResenaService {
     }
 
     public Optional<Resena> findById(Integer resenaId) {
-        return resenaRepository.findById(resenaId);
+        return resenaRepository.findByIdWithAllRelations(resenaId);
     }
 
     // Aprobar o rechazar una reseña (para el administrador)
@@ -106,5 +106,61 @@ public class ResenaService {
      */
     public Optional<Resena> getResenaByClienteAndProducto(Integer clienteId, Integer productoId) {
         return resenaRepository.findByClienteClienteIdAndProductoId(clienteId, productoId);
+    }
+    
+    // =================== MÉTODOS PARA ADMINISTRACIÓN ===================
+    
+    /**
+     * Obtener todas las reseñas pendientes de aprobación
+     */
+    public List<Resena> findResenasPendientes() {
+        return resenaRepository.findPendientesWithAllRelations();
+    }
+    
+    /**
+     * Obtener todas las reseñas aprobadas
+     */
+    public List<Resena> findResenasAprobadas() {
+        return resenaRepository.findAprobadasWithAllRelations();
+    }
+    
+    /**
+     * Obtener reseñas por cliente
+     */
+    public List<Resena> findByCliente(Cliente cliente) {
+        return resenaRepository.findByCliente(cliente);
+    }
+    
+    /**
+     * Aprobar una reseña
+     */
+    public boolean aprobarResena(Integer resenaId) {
+        try {
+            Optional<Resena> resenaOpt = resenaRepository.findById(resenaId);
+            if (resenaOpt.isPresent()) {
+                Resena resena = resenaOpt.get();
+                resena.setAprobada(true);
+                resenaRepository.save(resena);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Eliminar una reseña (para rechazarla)
+     */
+    public boolean eliminarResena(Integer resenaId) {
+        try {
+            if (resenaRepository.existsById(resenaId)) {
+                resenaRepository.deleteById(resenaId);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

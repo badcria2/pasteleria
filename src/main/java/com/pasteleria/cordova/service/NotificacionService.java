@@ -7,14 +7,18 @@ import com.pasteleria.cordova.repository.ResenaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class NotificacionService {
 
     @Autowired
@@ -23,7 +27,7 @@ public class NotificacionService {
     @Autowired
     private ResenaRepository resenaRepository;
     
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     
     /**
      * Obtiene todas las notificaciones (alertas) para el administrador
@@ -33,7 +37,7 @@ public class NotificacionService {
         List<Map<String, Object>> notificaciones = new ArrayList<>();
         
         // Obtener pedidos nuevos (últimos 7 días)
-        LocalDateTime hace7Dias = LocalDateTime.now().minusDays(7);
+        LocalDate hace7Dias = LocalDate.now().minusDays(7);
         List<Pedido> pedidosRecientes = pedidoRepository.findByFechaAfterOrderByFechaDesc(hace7Dias);
         
         for (Pedido pedido : pedidosRecientes) {
@@ -42,7 +46,7 @@ public class NotificacionService {
             notif.put("tipo", "pedido");
             notif.put("titulo", "Nuevo pedido #" + pedido.getId());
             notif.put("descripcion", "Pedido por $" + pedido.getTotal() + " - " + pedido.getEstado());
-            notif.put("fecha", pedido.getFecha().format(formatter));
+            notif.put("fecha", pedido.getFecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             notif.put("icono", "fas fa-shopping-cart");
             notif.put("color", "bg-success");
             notif.put("url", "/admin/pedidos");
@@ -50,7 +54,9 @@ public class NotificacionService {
         }
         
         // Obtener reseñas pendientes de aprobación
-        List<Resena> resenasPendientes = resenaRepository.findByAprobadaFalseOrderByFechaCreacionDesc();
+        List<Resena> resenasPendientes = resenaRepository.findTop10RecentWithAllRelations().stream()
+                .filter(r -> !r.isAprobada())
+                .collect(Collectors.toList());
         
         for (Resena resena : resenasPendientes) {
             Map<String, Object> notif = new HashMap<>();
@@ -58,10 +64,10 @@ public class NotificacionService {
             notif.put("tipo", "resena");
             notif.put("titulo", "Nueva reseña pendiente");
             notif.put("descripcion", "Reseña de " + resena.getProducto().getNombre() + " - " + resena.getCalificacion() + " estrellas");
-            notif.put("fecha", resena.getFechaCreacion().format(formatter));
+            notif.put("fecha", resena.getFechaCreacion().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
             notif.put("icono", "fas fa-star");
             notif.put("color", "bg-warning");
-            notif.put("url", "/admin/productos");
+            notif.put("url", "/admin/resenas");
             notificaciones.add(notif);
         }
         
@@ -84,7 +90,9 @@ public class NotificacionService {
         List<Map<String, Object>> mensajes = new ArrayList<>();
         
         // Obtener reseñas recientes (tanto aprobadas como pendientes)
-        List<Resena> resenasRecientes = resenaRepository.findTop10ByOrderByFechaCreacionDesc();
+        List<Resena> resenasRecientes = resenaRepository.findTop10RecentWithAllRelations().stream()
+                .limit(10)
+                .collect(Collectors.toList());
         
         for (Resena resena : resenasRecientes) {
             Map<String, Object> mensaje = new HashMap<>();
@@ -96,7 +104,7 @@ public class NotificacionService {
             mensaje.put("calificacion", resena.getCalificacion());
             mensaje.put("producto", resena.getProducto().getNombre());
             mensaje.put("aprobada", resena.isAprobada());
-            mensaje.put("url", "/admin/productos");
+            mensaje.put("url", "/admin/resenas");
             mensajes.add(mensaje);
         }
         
@@ -108,7 +116,7 @@ public class NotificacionService {
      */
     public int contarNotificacionesPendientes() {
         // Contar pedidos de los últimos 7 días
-        LocalDateTime hace7Dias = LocalDateTime.now().minusDays(7);
+        LocalDate hace7Dias = LocalDate.now().minusDays(7);
         int pedidosRecientes = pedidoRepository.countByFechaAfter(hace7Dias);
         
         // Contar reseñas pendientes

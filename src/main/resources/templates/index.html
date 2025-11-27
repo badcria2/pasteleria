@@ -31,6 +31,9 @@
             <li sec:authorize="!isAuthenticated()">
                 <a th:href="@{/login}">Iniciar Sesión</a>
             </li>
+            <li sec:authorize="!isAuthenticated()">
+                <a th:href="@{/registro}">Registrarse</a>
+            </li>
             <li sec:authorize="isAuthenticated() and hasRole('CLIENTE')">
                 <a th:href="@{/pedidos/mis-compras}">Mis Compras</a>
             </li>

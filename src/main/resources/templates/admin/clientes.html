@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Clientes - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Navbar Styles -->
+    <style>
+        /* CSS Variables matching main website */
+        :root {
+            --color-marron: #8B4513;
+            --color-marron-oscuro: #6B3410;
+            --color-marron-claro: #A0522D;
+            --color-naranja: #E8956C;
+            --color-naranja-claro: #F4A582;
+            --color-beige: #F5DEB3;
+            --color-beige-claro: #FFF8DC;
+            --color-beige-oscuro: #D2B48C;
+            --color-crema: #FFF5E6;
+        }
+        
+        /* Navbar general styling - completely transparent */
+        .navbar {
+            background: transparent !important;
+            box-shadow: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Sidebar toggle button */
+        #sidebarToggleTop {
+            color: #6c757d !important;
+        }
+        
+        #sidebarToggleTop:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        /* Alert and notification icons */
+        .navbar-nav .nav-link {
+            border-radius: 50%;
+            margin: 0 0.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            color: #6c757d !important;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+            color: #495057 !important;
+        }
+        
+        /* User dropdown styling - completely transparent */
+        .navbar-nav .nav-link.user-profile {
+            width: auto;
+            border-radius: 0 !important;
+            padding: 0.2rem 0.4rem !important;
+            margin-left: 1.5rem;
+            background: transparent !important;
+            border: none;
+            backdrop-filter: none;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+        
+        .navbar-nav .nav-link.user-profile:hover {
+            background: rgba(0, 0, 0, 0.02) !important;
+            border: none;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Navbar alignment */
+        .navbar .navbar-nav {
+            margin-left: auto !important;
+        }
+        
+        /* User text styling */
+        .user-profile .username {
+            color: #495057 !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-shadow: none;
+        }
+        
+        .user-profile i {
+            color: #6c757d !important;
+            opacity: 0.7;
+        }
+        
+        /* Dropdown menus */
+        .dropdown-menu {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            min-width: 200px;
+            background: white;
+        }
+        
+        .dropdown-header {
+            background: #6c757d;
+            color: white;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            margin: 0;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Dropdown items */
+        .dropdown-item {
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #212529;
+        }
+        
+        /* Badge positioning */
+        .position-relative .badge {
+            font-size: 0.6rem !important;
+            padding: 0.25em 0.5em;
+            min-width: 18px;
+            height: 18px;
+        }
+        
+        /* Remove border from navbar */
+        .navbar {
+            border-bottom: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Page Wrapper -->
+    <div id="wrapper">
+        
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/admin/dashboard}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">Pastelería Admin</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/dashboard}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+ 
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Administración
+            </div>
+
+            <!-- Nav Item - Productos -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/productos}">
+                    <i class="fas fa-fw fa-cake"></i>
+                    <span>Productos</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Pedidos -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/pedidos}">
+                    <i class="fas fa-fw fa-clipboard-list"></i>
+                    <span>Pedidos</span>
+                </a>
+            </li>
+
+            <!-- Nav Item - Gestión de Reseñas -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/resenas}">
+                    <i class="fas fa-fw fa-star"></i>
+                    <span>Gestión de Reseñas</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">Reportes</div>
+
+            <!-- Nav Item - Reporte de Clientes -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/clientes}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Reporte de Clientes</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm">
+                    <!-- Sidebar Toggle -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars" style="color: #8B4513;"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto d-flex align-items-center">
+
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-2">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="alertsDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                               style="color: #8B4513; font-size: 1.2rem; padding: 0.5rem;">
+                                <i class="fas fa-bell"></i>
+                                <!-- Counter - Alerts -->
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                                      th:if="${notificacionesAlertas != null and !notificacionesAlertas.empty}" 
+                                      th:text="${#lists.size(notificacionesAlertas)}" style="font-size: 0.6rem;">3</span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header" style="background: linear-gradient(135deg, #8B4513 0%, #E8956C 100%); color: white;">
+                    Centro de Alertas
+                </h6>
+                                
+                                <!-- Alertas dinámicas -->
+                                <div th:if="${notificacionesAlertas != null and !notificacionesAlertas.empty}">
+                                    <button th:each="notif : ${notificacionesAlertas}" 
+                                           class="dropdown-item d-flex align-items-center notificacion-item" 
+                                           th:onclick="'window.location.href=\'' + @{/admin/resenas} + '\';'"
+                                           onkeypress="handleKeyPress(event)">
+                                        <div class="mr-3">
+                                            <div class="icon-circle bg-warning">
+                                                <i class="fas fa-exclamation-triangle text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="small text-gray-500" th:text="${notif.fecha}">Fecha</div>
+                                            <span class="font-weight-bold" th:text="${notif.titulo}">Mensaje de la notificación</span>
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <!-- Mensaje cuando no hay alertas -->
+                                <div th:if="${notificacionesAlertas == null or notificacionesAlertas.empty}">
+                                    <span class="dropdown-item text-center small text-gray-500">No hay nuevas alertas</span>
+                                </div>
+                                
+                                <button class="dropdown-item text-center small text-gray-500" 
+                                        th:onclick="'window.location.href=\'' + @{/admin/resenas} + '\';'"
+                                        onkeypress="handleKeyPress(event)">Ver Todas las Alertas</button>
+                            </div>
+                        </li>
+
+                        <!-- Nav Item - Messages -->
+                        <li class="nav-item dropdown no-arrow mx-2">
+                            <a class="nav-link dropdown-toggle position-relative" href="#" id="messagesDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                               style="color: #8B4513; font-size: 1.2rem; padding: 0.5rem;">
+                                <i class="fas fa-envelope"></i>
+                                <!-- Counter - Messages -->
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                                      th:if="${notificacionesMensajes != null and !notificacionesMensajes.empty}" 
+                                      th:text="${#lists.size(notificacionesMensajes)}" style="font-size: 0.6rem;">7</span>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+                                <h6 class="dropdown-header" style="background: linear-gradient(135deg, #8B4513 0%, #E8956C 100%); color: white;">
+                    Centro de Reseñas
+                </h6>
+                                
+                                <!-- Mensajes dinámicos -->
+                                <div th:if="${notificacionesMensajes != null and !notificacionesMensajes.empty}">
+                                    <button th:each="mensaje : ${notificacionesMensajes}" 
+                                           class="dropdown-item d-flex align-items-center mensaje-item" 
+                                           th:onclick="'window.location.href=\'' + @{/admin/resenas} + '\';'"
+                                           onkeypress="handleKeyPress(event)">
+                                        <div class="dropdown-list-image mr-3">
+                                            <img class="rounded-circle" src="https://via.placeholder.com/60x60" alt="Usuario" style="width: 60px; height: 60px;">
+                                            <div class="status-indicator bg-success"></div>
+                                        </div>
+                                        <div class="font-weight-bold">
+                                            <div class="text-truncate" th:text="${mensaje.contenido}">Mensaje del usuario</div>
+                                            <div class="small text-gray-500" th:text="${mensaje.fechaRelativa}">Fecha del mensaje</div>
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <!-- Mensaje cuando no hay mensajes -->
+                                <div th:if="${notificacionesMensajes == null or notificacionesMensajes.empty}">
+                                    <span class="dropdown-item text-center small text-gray-500">No hay nuevos mensajes</span>
+                                </div>
+                                
+                                <button class="dropdown-item text-center small text-gray-500" 
+                                        th:onclick="'window.location.href=\'' + @{/admin/resenas} + '\';'"
+                                        onkeypress="handleKeyPress(event)">Leer Más Mensajes</button>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+        <!-- Nav Item - User Information -->
+        <li class="nav-item dropdown no-arrow ms-auto">
+            <a class="nav-link dropdown-toggle d-flex align-items-center user-profile" href="#" id="userDropdown" role="button"
+               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img class="rounded-circle me-2" 
+                     th:src="'https://ui-avatars.com/api/?name=' + ${#strings.replace(#authentication.name, ' ', '+')} + '&background=8B4513&color=ffffff&size=28&bold=true'" 
+                     alt="Usuario" 
+                     style="width: 28px; height: 28px; box-shadow: 0 2px 8px rgba(139,69,19,0.2);">
+                <span class="d-none d-sm-inline username" th:text="${#authentication.name}">Usuario</span>
+                <i class="fas fa-chevron-down ms-2" style="font-size: 0.7rem; color: #8B4513; opacity: 0.7;"></i>
+            </a>
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Perfil
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Configuración
+                </a>
+                <div class="dropdown-divider"></div>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="dropdown-item" type="submit">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </li>                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Clientes</h1>
+                    </div>
+
+<main class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-success" onclick="exportarExcel()">
+                        <i class="fas fa-file-excel me-1"></i>Exportar Excel
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-1"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mensajes de alerta -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Estadísticas Generales -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title" th:text="${totalClientes}">0</h4>
+                                    <p class="card-text">Total Clientes</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title" th:text="${clientesConPedidos}">0</h4>
+                                    <p class="card-text">Con Pedidos</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-shopping-cart fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title" th:text="${clientesNuevos}">0</h4>
+                                    <p class="card-text">Nuevos Este Mes</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-user-plus fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title" th:text="${#numbers.formatDecimal(porcentajeConPedidos, 0, 1)} + '%'">0%</h4>
+                                    <p class="card-text">% Con Compras</p>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-percentage fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtros de Búsqueda</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="filtroNombre" class="form-label">Nombre del Cliente</label>
+                            <input type="text" class="form-control" id="filtroNombre" placeholder="Buscar por nombre...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="filtroEmail" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="filtroEmail" placeholder="Buscar por email...">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="filtroEstado" class="form-label">Estado</label>
+                            <select class="form-control" id="filtroEstado">
+                                <option value="">Todos</option>
+                                <option value="con_pedidos">Con Pedidos</option>
+                                <option value="sin_pedidos">Sin Pedidos</option>
+                                <option value="nuevos">Registrados Este Mes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button class="btn btn-primary me-2" onclick="aplicarFiltros()">
+                                <i class="fas fa-search me-1"></i>Buscar
+                            </button>
+                            <button class="btn btn-secondary" onclick="limpiarFiltros()">
+                                <i class="fas fa-times me-1"></i>Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Clientes -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-table me-2"></i>Lista de Clientes</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(clientes)}" class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>No hay clientes registrados.</p>
+                    </div>
+                    
+                    <div th:if="${!#lists.isEmpty(clientes)}">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="clientesTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAll" class="form-check-input">
+                                        </th>
+                                        <th>Cliente</th>
+                                        <th>Contacto</th>
+                                        <th>Ubicación</th>
+                                        <th>Fecha Registro</th>
+                                        <th>Pedidos</th>
+                                        <th>Total Gastado</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="cliente : ${clientes}" 
+                                        th:data-cliente-id="${cliente.clienteId}"
+                                        th:data-tiene-pedidos="${cliente.pedidos != null and !cliente.pedidos.isEmpty()}"
+                                        th:data-fecha-registro="${cliente.usuario.fechaRegistro}"
+                                        th:data-nombre="${cliente.usuario.nombre?.toLowerCase()}"
+                                        th:data-email="${cliente.usuario.email?.toLowerCase()}">
+                                        
+                                        <td>
+                                            <input type="checkbox" class="form-check-input cliente-checkbox" 
+                                                   th:value="${cliente.clienteId}">
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle fa-2x text-primary me-3"></i>
+                                                <div>
+                                                    <strong th:text="${cliente.usuario.nombre}">Nombre Cliente</strong><br>
+                                                    <small class="text-muted">ID: <span th:text="${cliente.clienteId}">1</span></small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <i class="fas fa-envelope me-1 text-muted"></i>
+                                                <span th:text="${cliente.usuario.email}">email@cliente.com</span><br>
+                                                <i class="fas fa-phone me-1 text-muted"></i>
+                                                <span th:text="${cliente.usuario.telefono ?: 'N/A'}">123456789</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-map-marker-alt me-1 text-muted"></i>
+                                            <span th:text="${cliente.direccion ?: 'No especificada'}">Dirección</span>
+                                        </td>
+                                        <td>
+                                            <small th:text="${#temporals.format(cliente.usuario.fechaRegistro, 'dd/MM/yyyy')}">01/01/2024</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info" th:text="${cliente.pedidos?.size() ?: 0}">0</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-success fw-bold">
+                                                S/ <span th:text="${cliente.pedidos != null ? #aggregates.sum(cliente.pedidos.![total]) : '0.00'}">0.00</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${cliente.pedidos != null and !cliente.pedidos.isEmpty()}" 
+                                                  class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Activo
+                                            </span>
+                                            <span th:if="${cliente.pedidos == null or cliente.pedidos.isEmpty()}" 
+                                                  class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Sin Compras
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-outline-info btn-sm" 
+                                                        th:data-cliente-id="${cliente.clienteId}"
+                                                        onclick="verDetalleClienteHandler(this)">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success btn-sm" 
+                                                        th:data-cliente-id="${cliente.clienteId}"
+                                                        th:data-telefono="${cliente.usuario.telefono}"
+                                                        onclick="contactarWhatsAppHandler(this)"
+                                                        title="Contactar por WhatsApp">
+                                                    <i class="fab fa-whatsapp"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Paginación -->
+                        <nav aria-label="Navegación de clientes">
+                            <ul class="pagination justify-content-center" id="pagination">
+                                <!-- Se genera dinámicamente con JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal de Detalle del Cliente -->
+<div class="modal fade" id="detalleClienteModal" tabindex="-1" aria-labelledby="detalleClienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-gradient-primary text-white border-0">
+                <h4 class="modal-title fw-bold" id="detalleClienteModalLabel">
+                    <i class="fas fa-user-circle me-2"></i>Perfil Detallado del Cliente
+                </h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background-color: #f8f9fa;">
+                <div id="modalClienteContent">
+                    <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-3 text-muted fw-medium">Cargando información del cliente...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-0 p-4">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-success px-4" onclick="contactarPorWhatsApp()">
+                    <i class="fab fa-whatsapp me-1"></i>Contactar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Pastelería Córdova 2024</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+<!-- Bootstrap core JavaScript-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script th:src="@{/js/main.js}"></script>
+
+<script>
+let currentClienteId = null;
+let currentPage = 1;
+const itemsPerPage = 10;
+
+document.addEventListener('DOMContentLoaded', function() {
+    setupEventListeners();
+    paginateTable();
+});
+
+function setupEventListeners() {
+    // Select all checkbox
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.cliente-checkbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    // Filtros en tiempo real
+    document.getElementById('filtroNombre').addEventListener('input', aplicarFiltros);
+    document.getElementById('filtroEmail').addEventListener('input', aplicarFiltros);
+    document.getElementById('filtroEstado').addEventListener('change', aplicarFiltros);
+}
+
+function aplicarFiltros() {
+    const filtroNombre = document.getElementById('filtroNombre').value.toLowerCase();
+    const filtroEmail = document.getElementById('filtroEmail').value.toLowerCase();
+    const filtroEstado = document.getElementById('filtroEstado').value;
+    
+    const filas = document.querySelectorAll('#clientesTable tbody tr');
+    
+    filas.forEach(fila => {
+        const nombre = fila.dataset.nombre || '';
+        const email = fila.dataset.email || '';
+        const tienePedidos = fila.dataset.tienePedidos === 'true';
+        const fechaRegistro = new Date(fila.dataset.fechaRegistro);
+        const inicioMes = new Date();
+        inicioMes.setDate(1);
+        inicioMes.setHours(0, 0, 0, 0);
+        const esNuevo = fechaRegistro >= inicioMes;
+        
+        let mostrar = true;
+        
+        // Filtro por nombre
+        if (filtroNombre && !nombre.includes(filtroNombre)) {
+            mostrar = false;
+        }
+        
+        // Filtro por email
+        if (filtroEmail && !email.includes(filtroEmail)) {
+            mostrar = false;
+        }
+        
+        // Filtro por estado
+        if (filtroEstado) {
+            switch(filtroEstado) {
+                case 'con_pedidos':
+                    if (!tienePedidos) mostrar = false;
+                    break;
+                case 'sin_pedidos':
+                    if (tienePedidos) mostrar = false;
+                    break;
+                case 'nuevos':
+                    if (!esNuevo) mostrar = false;
+                    break;
+            }
+        }
+        
+        fila.style.display = mostrar ? '' : 'none';
+    });
+    
+    currentPage = 1;
+    paginateTable();
+}
+
+function limpiarFiltros() {
+    document.getElementById('filtroNombre').value = '';
+    document.getElementById('filtroEmail').value = '';
+    document.getElementById('filtroEstado').value = '';
+    aplicarFiltros();
+}
+
+function paginateTable() {
+    const filas = Array.from(document.querySelectorAll('#clientesTable tbody tr'))
+        .filter(fila => fila.style.display !== 'none');
+    
+    const totalPages = Math.ceil(filas.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    // Ocultar todas las filas
+    filas.forEach((fila, index) => {
+        fila.style.display = (index >= startIndex && index < endIndex) ? '' : 'none';
+    });
+    
+    // Generar paginación
+    generatePagination(totalPages);
+}
+
+function generatePagination(totalPages) {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+    
+    if (totalPages <= 1) return;
+    
+    // Botón anterior
+    const prevLi = document.createElement('li');
+    prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+    prevLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>`;
+    pagination.appendChild(prevLi);
+    
+    // Números de página
+    for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+        pagination.appendChild(li);
+    }
+    
+    // Botón siguiente
+    const nextLi = document.createElement('li');
+    nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+    nextLi.innerHTML = `<a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>`;
+    pagination.appendChild(nextLi);
+}
+
+function changePage(page) {
+    if (page < 1) return;
+    currentPage = page;
+    paginateTable();
+}
+
+function verDetalleCliente(clienteId) {
+    currentClienteId = clienteId;
+    const modal = new bootstrap.Modal(document.getElementById('detalleClienteModal'));
+    const modalContent = document.getElementById('modalClienteContent');
+    
+    // Mostrar spinner
+    modalContent.innerHTML = `
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    `;
+    
+    modal.show();
+    
+    // Cargar datos
+    fetch(`/admin/clientes/${clienteId}/estadisticas`)
+        .then(response => response.json())
+        .then(data => {
+            // Almacenar datos para WhatsApp
+            currentClienteData = {
+                clienteId: clienteId,
+                telefono: data.telefono,
+                nombreCompleto: data.nombreCompleto
+            };
+            
+            modalContent.innerHTML = `
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-gradient bg-primary text-white border-0 py-3">
+                                <h6 class="mb-0 fw-semibold"><i class="fas fa-user me-2"></i>Información Personal</h6>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="info-item mb-3">
+                                    <div class="text-muted small mb-1">NOMBRE</div>
+                                    <div class="fw-semibold">${data.nombreCompleto}</div>
+                                </div>
+                                <div class="info-item mb-3">
+                                    <div class="text-muted small mb-1">EMAIL</div>
+                                    <div class="fw-semibold">${data.email}</div>
+                                </div>
+                                <div class="info-item mb-3">
+                                    <div class="text-muted small mb-1">TELÉFONO</div>
+                                    <div class="fw-semibold">${data.telefono || 'No registrado'}</div>
+                                </div>
+                                <div class="info-item mb-3">
+                                    <div class="text-muted small mb-1">DIRECCIÓN</div>
+                                    <div class="fw-semibold">${data.direccion || 'No registrada'}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="text-muted small mb-1">MIEMBRO DESDE</div>
+                                    <div class="fw-semibold">${new Date(data.fechaRegistro).toLocaleDateString('es-ES')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-gradient bg-success text-white border-0 py-3">
+                                <h6 class="mb-0 fw-semibold"><i class="fas fa-shopping-cart me-2"></i>Estadísticas de Compras</h6>
+                            </div>
+                            <div class="card-body p-4 text-center">
+                                <div class="stat-highlight mb-4">
+                                    <div class="display-4 fw-bold text-success mb-1">${data.totalPedidos}</div>
+                                    <div class="text-muted">Total de Pedidos</div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="bg-light rounded p-3">
+                                            <div class="text-muted small mb-1">MONTO TOTAL</div>
+                                            <div class="h5 fw-bold text-success mb-0">S/ ${data.montoTotalCompras.toFixed(2)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="bg-light rounded p-3">
+                                            <div class="text-muted small mb-1">PROMEDIO POR COMPRA</div>
+                                            <div class="h5 fw-bold text-info mb-0">S/ ${data.promedioCompra.toFixed(2)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-gradient bg-warning text-dark border-0 py-3">
+                                <h6 class="mb-0 fw-semibold"><i class="fas fa-star me-2"></i>Actividad en Reseñas</h6>
+                            </div>
+                            <div class="card-body p-4 text-center">
+                                <div class="stat-highlight mb-4">
+                                    <div class="display-4 fw-bold text-warning mb-1">${data.totalResenas}</div>
+                                    <div class="text-muted">Reseñas Escritas</div>
+                                </div>
+                                <div class="bg-light rounded p-3">
+                                    <div class="text-muted small mb-2">CALIFICACIÓN PROMEDIO</div>
+                                    <div class="h4 fw-bold text-warning mb-2">${data.promedioCalificaciones.toFixed(1)}/5.0</div>
+                                    <div class="rating-stars fs-5">
+                                        ${'★'.repeat(Math.floor(data.promedioCalificaciones))}${'☆'.repeat(5 - Math.floor(data.promedioCalificaciones))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        })
+        .catch(error => {
+            modalContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error al cargar los detalles del cliente.
+                </div>
+            `;
+        });
+}
+
+// Variable global para almacenar los datos del cliente actual
+let currentClienteData = null;
+
+function contactarWhatsApp(clienteId, telefono) {
+    if (!telefono || telefono === 'null' || telefono.trim() === '') {
+        // Mostrar modal de advertencia con mejor diseño
+        const alertContent = `
+            <div class="modal fade" id="alertModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                            </div>
+                            <h5 class="mb-3">Número no disponible</h5>
+                            <p class="text-muted mb-4">Este cliente no tiene un número de teléfono registrado.</p>
+                            <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Entendido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', alertContent);
+        const modalElement = document.getElementById('alertModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        modalElement.addEventListener('hidden.bs.modal', () => modalElement.remove());
+        return;
+    }
+    
+    // Limpiar el número de teléfono (remover espacios, guiones, etc.)
+    const numeroLimpio = telefono.replace(/[^0-9+]/g, '');
+    
+    // Crear el mensaje personalizado
+    const mensaje = encodeURIComponent(`¡Hola! Me comunico desde Pastelería Córdova. ¿Cómo podemos ayudarte hoy?`);
+    
+    // Abrir WhatsApp
+    const urlWhatsApp = `https://wa.me/${numeroLimpio}?text=${mensaje}`;
+    window.open(urlWhatsApp, '_blank');
+}
+
+function contactarPorWhatsApp() {
+    if (currentClienteData && currentClienteData.telefono) {
+        contactarWhatsApp(currentClienteData.clienteId, currentClienteData.telefono);
+    } else if (currentClienteId) {
+        contactarWhatsApp(currentClienteId, null);
+    }
+}
+
+function exportarExcel() {
+    // Simular exportación a Excel
+    alert('Funcionalidad de exportación a Excel - En desarrollo');
+}
+
+function refreshData() {
+    location.reload();
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+        event.target.click();
+    }
+}
+
+// Handler functions for buttons with data attributes
+function verDetalleClienteHandler(button) {
+    const clienteId = button.getAttribute('data-cliente-id');
+    verDetalleCliente(clienteId);
+}
+
+function contactarWhatsAppHandler(button) {
+    const clienteId = button.getAttribute('data-cliente-id');
+    const telefono = button.getAttribute('data-telefono');
+    contactarWhatsApp(clienteId, telefono);
+}
+</script>
+
+</body>
+</html>

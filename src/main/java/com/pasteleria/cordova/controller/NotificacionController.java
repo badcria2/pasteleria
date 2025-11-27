@@ -58,7 +58,7 @@ public class NotificacionController {
             if ("pedido".equals(tipo)) {
                 url = "/admin/pedidos";
             } else if ("resena".equals(tipo)) {
-                url = "/admin/productos";
+                url = "/admin/resenas";
             }
             
             response.put("status", "success");

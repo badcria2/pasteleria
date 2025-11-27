@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Dashboard - Admin</title>
+    <title>Gestión de Reseñas - Admin</title>
     
     <!-- Custom fonts for this template -->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -165,11 +165,12 @@
                 <div class="sidebar-brand-text mx-3">Pastelería <sup>Admin</sup></div>
             </a>
 
+            <!-- Divider -->
                         <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
+            <li class="nav-item">
                 <a class="nav-link" th:href="@{/admin/dashboard}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
@@ -201,7 +202,7 @@
             </li>
 
             <!-- Nav Item - Gestión de Reseñas -->
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" th:href="@{/admin/resenas}">
                     <i class="fas fa-fw fa-star"></i>
                     <span>Gestión de Reseñas</span>
@@ -240,7 +241,8 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm">
+                                 <!-- Topbar -->
+                               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm">
                     <!-- Sidebar Toggle -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars" style="color: #8B4513;"></i>
@@ -416,89 +418,94 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a th:href="@{/admin/productos/nuevo}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                            <i class="fas fa-plus fa-sm text-white-50"></i> Nuevo Producto
-                        </a>
+                        <h1 class="h3 mb-0 text-gray-800">Reseñas</h1>
+                        <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onclick="refreshData()">
+                            <i class="fas fa-sync-alt fa-sm text-white-50"></i> Actualizar
+                        </button>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span th:text="${errorMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
                     <!-- Content Row -->
-                    <div class="row align-items-stretch dashboard-row">
-
-                        <!-- Ventas del Mes Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Ventas del Mes</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                $<span th:text="${ventasDelMes ?: '0.00'}"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x" style="color: #d4a574;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Ventas Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Total Ventas</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                $<span th:text="${totalVentas ?: '0.00'}"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-success"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Clientes Card -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                Total Clientes</div>
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" th:text="${totalClientes ?: 0}"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Pedidos Card -->
+                    <div class="row">
+                        <!-- Pending Reviews Card -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-warning shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Total Pedidos</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPedidos ?: 0}"></div>
+                                                Pendientes
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPendientes}">0</div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-shopping-cart fa-2x" style="color: #f6c23e;"></i>
+                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Approved Reviews Card -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Aprobadas
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalAprobadas}">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Reviews Card -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Total Reseñas
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPendientes + totalAprobadas}">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Average Rating Card -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Promedio
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="promedioCalificacion">4.3/5</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-star fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -506,133 +513,170 @@
                         </div>
                     </div>
 
-                    <!-- Content Row -->
-                    <div class="row">
-
-                        <!-- Area Chart -->
-                        <div class="col-xl-8 col-lg-7 d-flex">
-                            <div class="card shadow mb-4 flex-fill">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Resumen de Ventas</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-star mr-2"></i>Gestión de Reseñas
+                            </h6>
+                            <!-- Tabs Navigation -->
+                            <ul class="nav nav-pills" id="resenasTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pendientes-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#pendientes" type="button" role="tab">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Pendientes <span class="badge bg-warning ms-2" th:text="${totalPendientes}">0</span>
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="aprobadas-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#aprobadas" type="button" role="tab">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        Aprobadas <span class="badge bg-success ms-2" th:text="${totalAprobadas}">0</span>
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
-
-                        <!-- Pie Chart -->
-                        <div class="col-xl-4 col-lg-5 d-flex">
-                            <div class="card shadow mb-4 flex-fill">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Estados de Pedidos</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color: #f6c23e;"></i> Pendientes (<span th:text="${totalPendientes}">0</span>)
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle" style="color: #36b9cc;"></i> En Proceso (<span th:text="${totalEnProceso}">0</span>)
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Completados (<span th:text="${totalCompletados}">0</span>)
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-danger"></i> Cancelados (<span th:text="${totalCancelados}">0</span>)
-                                        </span>
-                                    </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="resenasTabContent">
+                                <!-- Tab de Reseñas Pendientes -->
+                                <div class="tab-pane fade show active" id="pendientes" role="tabpanel">
+                            <div th:if="${#lists.isEmpty(resenasPendientes)}" class="text-center text-muted py-4">
+                                <i class="fas fa-check-circle fa-3x mb-3"></i>
+                                <p>¡Excelente! No hay reseñas pendientes por revisar.</p>
+                            </div>
+                            
+                            <div th:if="${!#lists.isEmpty(resenasPendientes)}">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Cliente</th>
+                                                <th>Producto</th>
+                                                <th>Calificación</th>
+                                                <th>Comentario</th>
+                                                <th>Fecha</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="resena : ${resenasPendientes}">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-user-circle fa-2x text-secondary me-2"></i>
+                                                        <div>
+                                                            <strong th:text="${resena.cliente.usuario.nombre}">Nombre Cliente</strong><br>
+                                                            <small class="text-muted" th:text="${resena.cliente.usuario.email}">email@cliente.com</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong th:text="${resena.producto.nombre}">Producto</strong>
+                                                </td>
+                                                <td>
+                                                    <div class="rating-display">
+                                                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                                              th:class="${i <= resena.calificacion} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></span>
+                                                        <span class="ms-2" th:text="${resena.calificacion} + '/5'">5/5</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="comment-preview" th:title="${resena.comentario}">
+                                                        <span th:text="${#strings.length(resena.comentario) > 50 ? #strings.substring(resena.comentario, 0, 50) + '...' : resena.comentario}">Comentario...</span>
+                                                        <button class="btn btn-sm btn-outline-info ms-2" 
+                                                                th:onclick="'verDetalleResena(' + ${resena.id} + ')'">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <small th:text="${#temporals.format(resena.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</small>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <form th:action="@{/admin/resenas/{id}/aprobar(id=${resena.id})}" method="post" style="display: inline;">
+                                                            <button type="submit" class="btn btn-success btn-sm" 
+                                                                    onclick="return confirm('¿Está seguro de aprobar esta reseña?')">
+                                                                <i class="fas fa-check"></i> Aprobar
+                                                            </button>
+                                                        </form>
+                                                        <form th:action="@{/admin/resenas/{id}/rechazar(id=${resena.id})}" method="post" style="display: inline;">
+                                                            <button type="submit" class="btn btn-danger btn-sm ms-1" 
+                                                                    onclick="return confirm('¿Está seguro de rechazar y eliminar esta reseña?')">
+                                                                <i class="fas fa-times"></i> Rechazar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Content Row -->
-                    <div class="row">
-
-                        <!-- Productos Más Vendidos -->
-                        <div class="col-lg-6 mb-4">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Productos Más Vendidos</h6>
+                                <!-- Tab de Reseñas Aprobadas -->
+                                <div class="tab-pane fade" id="aprobadas" role="tabpanel">
+                            <div th:if="${#lists.isEmpty(resenasAprobadas)}" class="text-center text-muted py-4">
+                                <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                                <p>Aún no hay reseñas aprobadas.</p>
+                            </div>
+                            
+                            <div th:if="${!#lists.isEmpty(resenasAprobadas)}">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th>Cliente</th>
+                                                <th>Producto</th>
+                                                <th>Calificación</th>
+                                                <th>Comentario</th>
+                                                <th>Fecha Aprobación</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="resena : ${resenasAprobadas}">
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-user-circle fa-2x text-success me-2"></i>
+                                                        <div>
+                                                            <strong th:text="${resena.cliente.usuario.nombre}">Nombre Cliente</strong><br>
+                                                            <small class="text-muted" th:text="${resena.cliente.usuario.email}">email@cliente.com</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong th:text="${resena.producto.nombre}">Producto</strong>
+                                                </td>
+                                                <td>
+                                                    <div class="rating-display">
+                                                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                                              th:class="${i <= resena.calificacion} ? 'fas fa-star text-warning' : 'far fa-star text-muted'"></span>
+                                                        <span class="ms-2" th:text="${resena.calificacion} + '/5'">5/5</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="comment-preview" th:title="${resena.comentario}">
+                                                        <span th:text="${#strings.length(resena.comentario) > 50 ? #strings.substring(resena.comentario, 0, 50) + '...' : resena.comentario}">Comentario...</span>
+                                                        <button class="btn btn-sm btn-outline-info ms-2" 
+                                                                th:onclick="'verDetalleResena(' + ${resena.id} + ')'">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <small th:text="${#temporals.format(resena.fechaCreacion, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</small>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div class="card-body">
-                                    <div th:if="${#lists.isEmpty(productosMasVendidos)}" class="text-center text-muted py-4">
-                                        <i class="fas fa-info-circle fa-2x mb-2"></i>
-                                        <p>No hay datos de ventas disponibles</p>
-                                    </div>
-                                    <div th:unless="${#lists.isEmpty(productosMasVendidos)}">
-                                        <div th:each="producto, iterStat : ${productosMasVendidos}" class="mb-3">
-                                            <div class="d-flex align-items-center">
-                                                <div class="mr-3">
-                                                    <div class="icon-circle bg-primary">
-                                                        <i class="fas fa-cake text-white"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="small text-gray-500">#<span th:text="${iterStat.count}"></span></div>
-                                                    <span th:text="${producto[0]}" class="font-weight-bold"></span>
-                                                    <div class="small text-gray-500">
-                                                        Vendidos: <span th:text="${producto[1]}"></span> unidades
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr th:if="${!iterStat.last}" class="my-3">
-                                        </div>
-                                    </div>
+                            </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Estadísticas Rápidas -->
-                        <div class="col-lg-6 mb-4">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Estadísticas Generales</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row no-gutters">
-                                        <div class="col-6 border-right">
-                                            <div class="text-center">
-                                                <div class="h2 font-weight-bold text-primary" th:text="${totalProductos}"></div>
-                                                <div class="text-xs font-weight-bold text-uppercase">Total Productos</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="text-center">
-                                                <div class="h2 font-weight-bold text-success" th:text="${totalPedidos}"></div>
-                                                <div class="text-xs font-weight-bold text-uppercase">Total Pedidos</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr class="my-4">
-                                    <div class="row no-gutters">
-                                        <div class="col-6 border-right">
-                                            <div class="text-center">
-                                                <div class="h2 font-weight-bold text-info" th:text="${pedidosDelMes}"></div>
-                                                <div class="text-xs font-weight-bold text-uppercase">Pedidos del Mes</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="text-center">
-                                                <div class="h2 font-weight-bold text-warning" th:text="${productosConPocoStock}"></div>
-                                                <div class="text-xs font-weight-bold text-uppercase">Alertas de Stock</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
                 </div>
@@ -645,7 +689,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Pastelería Córdova 2024</span>
+                        <span>Copyright &copy; Pastelería Córdova 2025</span>
                     </div>
                 </div>
             </footer>
@@ -662,281 +706,194 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Modal para detalles de reseña -->
+<div class="modal fade" id="detalleResenaModal" tabindex="-1" aria-labelledby="detalleResenaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleResenaModalLabel">
+                    <i class="fas fa-star text-warning me-2"></i>Detalle de la Reseña
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Custom scripts for all pages-->
-    <script>
-    (function($) {
-      "use strict";
+<div th:replace="fragments/admin_layout :: footer"></div>
 
-      // Toggle the side navigation
-      $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-        $("body").toggleClass("sidebar-toggled");
-        $(".sidebar").toggleClass("toggled");
-        if ($(".sidebar").hasClass("toggled")) {
-          $('.sidebar .collapse').collapse('hide');
-        };
-      });
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-      // Close any open menu accordions when window is resized below 768px
-      $(window).resize(function() {
-        if ($(window).width() < 768) {
-          $('.sidebar .collapse').collapse('hide');
-        };
-        
-        // Toggle the side navigation when window is resized below 480px
-        if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
-          $("body").addClass("sidebar-toggled");
-          $(".sidebar").addClass("toggled");
-          $('.sidebar .collapse').collapse('hide');
-        };
-      });
+<script>
+// Calcular y mostrar promedio de calificación
+document.addEventListener('DOMContentLoaded', function() {
+    calcularPromedioCalificacion();
+});
 
-      // Scroll to top button appear
-      $(document).on('scroll', function() {
-        var scrollDistance = $(this).scrollTop();
-        if (scrollDistance > 100) {
-          $('.scroll-to-top').fadeIn();
-        } else {
-          $('.scroll-to-top').fadeOut();
-        }
-      });
-
-      // Smooth scrolling using jQuery easing
-      $(document).on('click', 'a.scroll-to-top', function(e) {
-        var $anchor = $(this);
-        $('html, body').stop().animate({
-          scrollTop: ($($anchor.attr('href')).offset().top)
-        }, 1000);
-        e.preventDefault();
-      });
-
-    })(jQuery);
-
-    </script>
-
-    <script th:inline="javascript">
-    /*<![CDATA[*/
-    // Variables con datos del servidor
-    var totalPendientes = [[${totalPendientes} ?: 0]];
-    var totalEnProceso = [[${totalEnProceso} ?: 0]];
-    var totalCompletados = [[${totalCompletados} ?: 0]];
-    var totalCancelados = [[${totalCancelados} ?: 0]];
-    /*]]>*/
-
-    // Gráfico de Área - Ventas
-    var ctx = document.getElementById("myAreaChart");
-    var myLineChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: /*[[${etiquetasMeses}]]*/ ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
-        datasets: [{
-          label: "Ventas (S/)",
-          lineTension: 0.3,
-          backgroundColor: "rgba(78, 115, 223, 0.05)",
-          borderColor: "rgba(78, 115, 223, 1)",
-          pointRadius: 3,
-          pointBackgroundColor: "rgba(78, 115, 223, 1)",
-          pointBorderColor: "rgba(78, 115, 223, 1)",
-          pointHoverRadius: 3,
-          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-          pointHitRadius: 10,
-          pointBorderWidth: 2,
-          data: /*[[${ventasPorMes}]]*/ [0, 10000, 5000, 15000, 10000, 20000, 15000, 25000, 20000, 30000, 25000, 40000],
-        }],
-      },
-      options: {
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 10,
-            right: 25,
-            top: 25,
-            bottom: 0
-          }
-        },
-        scales: {
-          x: {
-            time: {
-              unit: 'date'
-            },
-            grid: {
-              display: false,
-              drawBorder: false
-            },
-            ticks: {
-              maxTicksLimit: 7
-            }
-          },
-          y: {
-            ticks: {
-              maxTicksLimit: 5,
-              padding: 10,
-              callback: function(value, index, values) {
-                return '$' + value.toLocaleString();
-              }
-            },
-            grid: {
-              color: "rgb(234, 236, 244)",
-              zeroLineColor: "rgb(234, 236, 244)",
-              drawBorder: false,
-              borderDash: [2],
-              zeroLineBorderDash: [2]
-            }
-          },
-        },
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            backgroundColor: "rgb(255,255,255)",
-            bodyColor: "#858796",
-            titleMarginBottom: 10,
-            titleColor: '#6e707e',
-            titleFontSize: 14,
-            borderColor: '#dddfeb',
-            borderWidth: 1,
-            xPadding: 15,
-            yPadding: 15,
-            displayColors: false,
-            intersect: false,
-            mode: 'index',
-            caretPadding: 10,
-            callbacks: {
-              label: function(tooltipItem, chart) {
-                var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                return datasetLabel + ': $' + tooltipItem.parsed.y.toLocaleString();
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // Gráfico de Dona - Estados de Pedidos
-    var ctx2 = document.getElementById("myPieChart");
-    var myPieChart = new Chart(ctx2, {
-      type: 'doughnut',
-      data: {
-        labels: ["Pendientes", "En Proceso", "Completados", "Cancelados"],
-        datasets: [{
-          data: [
-            totalPendientes,
-            totalEnProceso,
-            totalCompletados,
-            totalCancelados
-          ],
-          backgroundColor: ['#f6c23e', '#36b9cc', '#1cc88a', '#e74a3b'],
-          hoverBackgroundColor: ['#f4b619', '#2c9faf', '#17a673', '#e02424'],
-          hoverBorderColor: "rgba(234, 236, 244, 1)",
-        }],
-      },
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          tooltip: {
-            backgroundColor: "rgb(255,255,255)",
-            bodyColor: "#858796",
-            borderColor: '#dddfeb',
-            borderWidth: 1,
-            xPadding: 15,
-            yPadding: 15,
-            displayColors: false,
-            caretPadding: 10,
-          },
-          legend: {
-            display: false
-          }
-        },
-        cutout: '80%',
-      },
+function calcularPromedioCalificacion() {
+    const calificaciones = [];
+    document.querySelectorAll('.rating-display').forEach(rating => {
+        const stars = rating.querySelectorAll('.fas.fa-star.text-warning').length;
+        if (stars > 0) calificaciones.push(stars);
     });
     
-    // JavaScript para manejar notificaciones
-    function manejarClickNotificacion(element) {
-        event.preventDefault();
-        
-        const tipo = element.getAttribute('data-tipo');
-        const id = element.getAttribute('data-id');
-        const url = element.getAttribute('data-url');
-        
-        // Marcar como leída (opcional)
-        fetch('/api/admin/notificaciones/marcar-leida', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `tipo=${tipo}&id=${id}`
-        })
+    if (calificaciones.length > 0) {
+        const promedio = calificaciones.reduce((a, b) => a + b, 0) / calificaciones.length;
+        document.getElementById('promedioCalificacion').textContent = promedio.toFixed(1) + '/5';
+    } else {
+        document.getElementById('promedioCalificacion').textContent = '-';
+    }
+}
+
+function verDetalleResena(resenaId) {
+    const modal = new bootstrap.Modal(document.getElementById('detalleResenaModal'));
+    const modalContent = document.getElementById('modalContent');
+    
+    // Mostrar spinner
+    modalContent.innerHTML = `
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    `;
+    
+    modal.show();
+    
+    // Cargar datos
+    fetch(`/admin/resenas/${resenaId}/details`)
         .then(response => response.json())
         .then(data => {
-            if (data.status === 'success') {
-                // Redirigir a la URL
-                window.location.href = data.redirectUrl || url;
-            }
+            const estrellas = Array.from({length: 5}, (_, i) => 
+                `<i class="fa${i < data.calificacion ? 's' : 'r'} fa-star ${i < data.calificacion ? 'text-warning' : 'text-muted'}"></i>`
+            ).join('');
+            
+            modalContent.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-user me-2"></i>Información del Cliente</h6>
+                        <p><strong>Nombre:</strong> ${data.clienteNombre}</p>
+                        <p><strong>Email:</strong> ${data.clienteEmail}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-box me-2"></i>Producto</h6>
+                        <p><strong>Nombre:</strong> ${data.productoNombre}</p>
+                        <p><strong>Estado:</strong> ${data.aprobada ? '<span class="badge bg-success">Aprobada</span>' : '<span class="badge bg-warning">Pendiente</span>'}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-12">
+                        <h6><i class="fas fa-star me-2 text-warning"></i>Calificación y Comentario</h6>
+                        <div class="mb-3">
+                            <div class="rating-display mb-2">
+                                ${estrellas}
+                                <span class="ms-2">${data.calificacion}/5</span>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="mb-0">${data.comentario || 'Sin comentario'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p><strong>Fecha de creación:</strong> ${new Date(data.fechaCreacion).toLocaleDateString('es-ES', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</p>
+                    </div>
+                </div>
+            `;
         })
         .catch(error => {
-            console.error('Error:', error);
-            // Redirigir de todos modos
-            window.location.href = url;
+            modalContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Error al cargar los detalles de la reseña.
+                </div>
+            `;
         });
-    }
-    
-    function manejarClickMensaje(element) {
-        event.preventDefault();
-        
-        const tipo = element.getAttribute('data-tipo');
-        const id = element.getAttribute('data-id');
-        const url = element.getAttribute('data-url');
-        
-        // Redirigir directamente a productos para ver reseñas
-        window.location.href = url;
-    }
-    
-    // Actualizar notificaciones cada 30 segundos (opcional)
-    setInterval(function() {
-        actualizarContadores();
-    }, 30000);
-    
-    function actualizarContadores() {
-        // Actualizar contador de alertas
-        fetch('/api/admin/notificaciones/alertas')
-            .then(response => response.json())
-            .then(data => {
-                const alertCounter = document.querySelector('#alertsDropdown .badge-counter');
-                if (alertCounter) {
-                    if (data.total > 0) {
-                        alertCounter.textContent = data.total;
-                        alertCounter.style.display = '';
-                    } else {
-                        alertCounter.style.display = 'none';
-                    }
-                }
-            })
-            .catch(error => console.error('Error actualizando alertas:', error));
-            
-        // Actualizar contador de mensajes
-        fetch('/api/admin/notificaciones/mensajes')
-            .then(response => response.json())
-            .then(data => {
-                const messageCounter = document.querySelector('#messagesDropdown .badge-counter');
-                if (messageCounter) {
-                    if (data.total > 0) {
-                        messageCounter.textContent = data.total;
-                        messageCounter.style.display = '';
-                    } else {
-                        messageCounter.style.display = 'none';
-                    }
-                }
-            })
-            .catch(error => console.error('Error actualizando mensajes:', error));
-    }
-    </script>
+}
+
+function refreshData() {
+    location.reload();
+}
+
+// Auto-dismiss alerts after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+});
+</script>
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">¿Seguro que quieres salir?</h5>
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Selecciona "Cerrar Sesión" para terminar tu sesión actual.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-primary" th:href="@{/logout}">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
 </body>
 </html>

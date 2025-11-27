@@ -40,9 +40,13 @@ public class ClienteService {
     public Optional<Cliente> findById(Integer clienteId) {
         return clienteRepository.findById(clienteId);
     }
+    
+    public Optional<Cliente> findByIdWithPedidosAndUsuario(Integer clienteId) {
+        return clienteRepository.findByIdWithPedidosAndUsuario(clienteId);
+    }
 
     public List<Cliente> findAllClientes() {
-        return clienteRepository.findAll();
+        return clienteRepository.findAllWithPedidosAndUsuario();
     }
 
     public Cliente updateCliente(Cliente cliente) {

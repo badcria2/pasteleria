@@ -2,6 +2,7 @@ package com.pasteleria.cordova.controller;
 
 import com.pasteleria.cordova.service.PedidoService;
 import com.pasteleria.cordova.service.ProductoService;
+import com.pasteleria.cordova.service.NotificacionService;
 import com.pasteleria.cordova.model.Pedido;
 import com.pasteleria.cordova.model.Producto;
 
@@ -25,6 +26,9 @@ public class DashboardController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private NotificacionService notificacionService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -71,6 +75,12 @@ public class DashboardController {
         List<String> etiquetasMeses = pedidoService.getEtiquetasMeses();
         model.addAttribute("ventasPorMes", ventasPorMes);
         model.addAttribute("etiquetasMeses", etiquetasMeses);
+        
+        // Agregar notificaciones para la topbar
+        List<Map<String, Object>> notificacionesAlertas = notificacionService.obtenerNotificacionesAlertas();
+        List<Map<String, Object>> notificacionesMensajes = notificacionService.obtenerNotificacionesMensajes();
+        model.addAttribute("notificacionesAlertas", notificacionesAlertas);
+        model.addAttribute("notificacionesMensajes", notificacionesMensajes);
         
         return "admin/dashboard";
     }

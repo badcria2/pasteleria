@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
     Optional<Pedido> findByIdWithDetallesAndProductos(@Param("id") Integer id);
     
     // Métodos para notificaciones
-    List<Pedido> findByFechaAfterOrderByFechaDesc(LocalDateTime fecha);
-    int countByFechaAfter(LocalDateTime fecha);
+    List<Pedido> findByFechaAfterOrderByFechaDesc(LocalDate fecha);
+    int countByFechaAfter(LocalDate fecha);
 }

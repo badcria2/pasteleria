@@ -103,24 +103,42 @@
             opacity: 0.7;
         }
         
-        /* Dropdown menus */
+        /* Dropdown menus - Forzar visibilidad */
         .dropdown-menu {
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-top: 0.5rem;
-            min-width: 200px;
-            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            margin-top: 0.5rem !important;
+            min-width: 200px !important;
+            max-width: 350px !important;
+            background: white !important;
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+            transition: all 0.3s ease !important;
+            visibility: hidden !important;
+            z-index: 1050 !important;
+        }
+        
+        .dropdown-menu.show {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            visibility: visible !important;
+        }
+        
+        /* Dropdown list específico para notificaciones */
+        .dropdown-list {
+            max-height: 400px !important;
+            overflow-y: auto !important;
         }
         
         .dropdown-header {
-            background: #6c757d;
-            color: white;
-            font-weight: 600;
-            border-radius: 6px 6px 0 0;
-            margin: 0;
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: #6c757d !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 6px 6px 0 0 !important;
+            margin: 0 !important;
+            padding: 0.75rem !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
         }
         
         /* Dropdown items */
@@ -147,6 +165,7 @@
             border-bottom: none !important;
         }
     </style>
+
 </head>
 
 <body id="page-top" class="sb-admin-2">
@@ -241,15 +260,14 @@
             <div id="content">
 
                 <!-- Topbar -->
-                                 <!-- Topbar -->
-                               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm">
+                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top">
                     <!-- Sidebar Toggle -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars" style="color: #8B4513;"></i>
+                        <i class="fa fa-bars"></i>
                     </button>
 
                     <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto d-flex align-items-center">
+                    <ul class="navbar-nav ms-auto d-flex align-items-center">
                         
                         <!-- Nav Item - Search Dropdown -->
                         <li class="nav-item dropdown no-arrow d-sm-none">
@@ -281,7 +299,7 @@
                                       th:style="${totalNotificaciones > 0 ? '' : 'display:none;'}"></span>
                             </a>
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header bg-primary text-white">
+                                <h6 class="dropdown-header">
                                     Centro de Alertas
                                 </h6>
                                 
@@ -326,7 +344,7 @@
                                       th:style="${totalMensajes > 0 ? '' : 'display:none;'}"></span>
                             </a>
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
-                                <h6 class="dropdown-header bg-primary text-white">
+                                <h6 class="dropdown-header">
                                     Centro de Reseñas
                                 </h6>
                                 
@@ -367,7 +385,7 @@
                                     </a>
                                 </div>
                                 
-                                <a class="dropdown-item text-center small text-gray-500" href="/admin/productos">Ver todas las reseñas</a>
+                                <a class="dropdown-item text-center small text-gray-500" href="/admin/resenas">Ver todas las reseñas</a>
                             </div>
                         </li>
 
@@ -378,11 +396,11 @@
                             <a class="nav-link dropdown-toggle d-flex align-items-center user-profile" href="#" id="userDropdown" role="button"
                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="rounded-circle me-2" 
-                                     th:src="'https://ui-avatars.com/api/?name=' + ${#strings.replace(#authentication.name, ' ', '+')} + '&background=8B4513&color=ffffff&size=28&bold=true'" 
+                                     th:src="'https://ui-avatars.com/api/?name=' + ${#strings.replace(#authentication.name, ' ', '+')} + '&background=6c757d&color=ffffff&size=28&bold=true'" 
                                      alt="Usuario" 
-                                     style="width: 28px; height: 28px; box-shadow: 0 2px 8px rgba(139,69,19,0.2);">
+                                     style="width: 28px; height: 28px;">
                                 <span class="d-none d-sm-inline username" th:text="${#authentication.name}">Usuario</span>
-                                <i class="fas fa-chevron-down ms-2" style="font-size: 0.7rem; color: #8B4513; opacity: 0.7;"></i>
+                                <i class="fas fa-chevron-down ms-2"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -438,17 +456,15 @@
                     <div class="row">
                         <!-- Pending Reviews Card -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card bg-warning text-dark shadow h-100 py-2">
                                 <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Pendientes
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPendientes}">0</div>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title" th:text="${totalPendientes}">2</h4>
+                                            <p class="card-text">Reseñas Pendientes</p>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-clock fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -457,17 +473,15 @@
 
                         <!-- Approved Reviews Card -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card bg-success text-white shadow h-100 py-2">
                                 <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Aprobadas
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalAprobadas}">0</div>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title" th:text="${totalAprobadas}">7</h4>
+                                            <p class="card-text">Reseñas Aprobadas</p>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-check-circle fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -476,17 +490,15 @@
 
                         <!-- Total Reviews Card -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card bg-info text-white shadow h-100 py-2">
                                 <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                Total Reseñas
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalPendientes + totalAprobadas}">0</div>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title" th:text="${totalPendientes + totalAprobadas}">9</h4>
+                                            <p class="card-text">Total Reseñas</p>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-comments fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -495,17 +507,15 @@
 
                         <!-- Average Rating Card -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card bg-primary text-white shadow h-100 py-2">
                                 <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Promedio
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="promedioCalificacion">4.3/5</div>
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="card-title" id="promedioCalificacion">4.3/5</h4>
+                                            <p class="card-text">Calificación Promedio</p>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-star fa-2x text-gray-300"></i>
+                                        <div class="align-self-center">
+                                            <i class="fas fa-star fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -710,8 +720,8 @@
 <div class="modal fade" id="detalleResenaModal" tabindex="-1" aria-labelledby="detalleResenaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detalleResenaModalLabel">
+            <div class="modal-header bg-white">
+                <h5 class="modal-title text-gray-800" id="detalleResenaModalLabel">
                     <i class="fas fa-star text-warning me-2"></i>Detalle de la Reseña
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -843,20 +853,90 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 5000);
 });
+
+// Funciones para manejar notificaciones
+function manejarClickNotificacion(element) {
+    event.preventDefault();
+    
+    const tipo = element.getAttribute('data-tipo');
+    const id = element.getAttribute('data-id');
+    const url = element.getAttribute('data-url');
+    
+    // Marcar como leída (opcional)
+    fetch('/api/admin/notificaciones/marcar-leida', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `tipo=${tipo}&id=${id}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Redirigir a la URL
+            window.location.href = data.redirectUrl || url;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Redirigir de todos modos
+        window.location.href = url;
+    });
+}
+
+function manejarClickMensaje(element) {
+    event.preventDefault();
+    
+    const tipo = element.getAttribute('data-tipo');
+    const id = element.getAttribute('data-id');
+    const url = element.getAttribute('data-url');
+    
+    // Redirigir directamente a reseñas para ver mensajes
+    window.location.href = url;
+}
+
+// Actualizar notificaciones cada 30 segundos (opcional)
+setInterval(function() {
+    actualizarContadores();
+}, 30000);
+
+function actualizarContadores() {
+    // Actualizar contador de alertas
+    fetch('/api/admin/notificaciones/alertas')
+        .then(response => response.json())
+        .then(data => {
+            const alertCounter = document.querySelector('#alertsDropdown .badge-counter');
+            if (alertCounter) {
+                if (data.total > 0) {
+                    alertCounter.textContent = data.total;
+                    alertCounter.style.display = '';
+                } else {
+                    alertCounter.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Error actualizando alertas:', error));
+        
+    // Actualizar contador de mensajes
+    fetch('/api/admin/notificaciones/mensajes')
+        .then(response => response.json())
+        .then(data => {
+            const messageCounter = document.querySelector('#messagesDropdown .badge-counter');
+            if (messageCounter) {
+                if (data.total > 0) {
+                    messageCounter.textContent = data.total;
+                    messageCounter.style.display = '';
+                } else {
+                    messageCounter.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Error actualizando mensajes:', error));
+}
 </script>
 
             </div>
             <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
         </div>
         <!-- End of Content Wrapper -->
@@ -888,12 +968,98 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 
+    <!-- Fragment de notificaciones -->
+    <div th:replace="fragments/notificaciones :: notificaciones-js"></div>
+
+    <!-- jQuery DEBE ir primero -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
     <!-- Bootstrap core JavaScript-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            console.log('🔔 Inicializando sistema de notificaciones en resenas.html');
+            
+            // Función específica para manejar alertas
+            $('#alertsDropdown').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const $dropdown = $(this).siblings('.dropdown-menu');
+                const isOpen = $dropdown.hasClass('show');
+                
+                console.log('🔔 Click en alertas, isOpen:', isOpen);
+                
+                // Cerrar todos los otros dropdowns
+                $('.dropdown-menu').not($dropdown).removeClass('show');
+                
+                // Toggle el dropdown actual
+                $dropdown.toggleClass('show');
+                
+                console.log('🔔 Dropdown alertas ahora:', $dropdown.hasClass('show') ? 'ABIERTO' : 'CERRADO');
+            });
+            
+            // Función específica para manejar mensajes
+            $('#messagesDropdown').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const $dropdown = $(this).siblings('.dropdown-menu');
+                const isOpen = $dropdown.hasClass('show');
+                
+                console.log('✉️ Click en mensajes, isOpen:', isOpen);
+                
+                // Cerrar todos los otros dropdowns
+                $('.dropdown-menu').not($dropdown).removeClass('show');
+                
+                // Toggle el dropdown actual
+                $dropdown.toggleClass('show');
+                
+                console.log('✉️ Dropdown mensajes ahora:', $dropdown.hasClass('show') ? 'ABIERTO' : 'CERRADO');
+            });
+            
+            // Función para el dropdown de usuario
+            $('#userDropdown').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const $dropdown = $(this).siblings('.dropdown-menu');
+                
+                // Cerrar todos los otros dropdowns
+                $('.dropdown-menu').not($dropdown).removeClass('show');
+                
+                // Toggle el dropdown actual
+                $dropdown.toggleClass('show');
+            });
+            
+            // Cerrar dropdowns al hacer click fuera
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.dropdown-menu').removeClass('show');
+                    console.log('🔔 Cerrando todos los dropdowns por click externo');
+                }
+            });
+            
+            // Verificar que las funciones de notificaciones están disponibles
+            setTimeout(function() {
+                if (typeof manejarClickNotificacion === 'function') {
+                    console.log('✅ Función manejarClickNotificacion disponible');
+                } else {
+                    console.warn('⚠️ Función manejarClickNotificacion no encontrada');
+                }
+                
+                if (typeof manejarClickMensaje === 'function') {
+                    console.log('✅ Función manejarClickMensaje disponible');
+                } else {
+                    console.warn('⚠️ Función manejarClickMensaje no encontrada');
+                }
+            }, 500);
+        });
+    </script>
 
 </body>
 </html>

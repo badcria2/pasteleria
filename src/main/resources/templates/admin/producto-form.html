@@ -103,24 +103,42 @@
             opacity: 0.7;
         }
         
-        /* Dropdown menus */
+        /* Dropdown menus - Forzar visibilidad */
         .dropdown-menu {
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-top: 0.5rem;
-            min-width: 200px;
-            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            margin-top: 0.5rem !important;
+            min-width: 200px !important;
+            max-width: 350px !important;
+            background: white !important;
+            opacity: 0 !important;
+            transform: translateY(-10px) !important;
+            transition: all 0.3s ease !important;
+            visibility: hidden !important;
+            z-index: 1050 !important;
+        }
+        
+        .dropdown-menu.show {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            visibility: visible !important;
+        }
+        
+        /* Dropdown list específico para notificaciones */
+        .dropdown-list {
+            max-height: 400px !important;
+            overflow-y: auto !important;
         }
         
         .dropdown-header {
-            background: #6c757d;
-            color: white;
-            font-weight: 600;
-            border-radius: 6px 6px 0 0;
-            margin: 0;
-            padding: 0.75rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            background: #6c757d !important;
+            color: white !important;
+            font-weight: 600 !important;
+            border-radius: 6px 6px 0 0 !important;
+            margin: 0 !important;
+            padding: 0.75rem !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
         }
         
         /* Dropdown items */
@@ -240,16 +258,16 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm d-flex justify-content-between">
+                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top d-flex justify-content-between">
                     <!-- Left Side -->
                     <div class="d-flex align-items-center">
                         <!-- Sidebar Toggle -->
                         <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa fa-bars" style="color: #d4a574;"></i>
+                            <i class="fa fa-bars"></i>
                         </button>
     
                         <!-- Page Title -->
-                        <h1 class="h4 mb-0 font-weight-bold" style="color: #d4a574;">
+                        <h1 class="h4 mb-0 font-weight-bold text-gray-800">
                             <i class="fas fa-box mr-2"></i>Formulario de Producto
                         </h1>
                     </div>
@@ -361,13 +379,12 @@
 
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center p-2 rounded-pill" href="#" id="userDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                               style="background: linear-gradient(135deg, #8B4513 0%, #E8956C 100%); color: white; transition: all 0.3s ease; box-shadow: 0 3px 6px rgba(139,69,19,0.2);">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center user-profile" href="#" id="userDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="img-profile rounded-circle me-2" th:src="'https://ui-avatars.com/api/?name=' + ${#strings.replace(#authentication.name, ' ', '+')} + '&background=ffffff&color=8B4513&size=35'" 
-                                     alt="Admin" style="width: 35px; height: 35px; border: 2px solid white;">
-                                <span class="d-none d-lg-inline fw-bold" th:text="${#authentication.name}">Administrador</span>
-                                <i class="fas fa-chevron-down ms-2" style="font-size: 0.8rem;"></i>
+                                     alt="Admin" style="width: 35px; height: 35px;">
+                                <span class="username d-none d-lg-inline" th:text="${#authentication.name}">Administrador</span>
+                                <i class="fas fa-chevron-down ms-2"></i>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -474,7 +491,8 @@
                     <h6 class="m-0 font-weight-bold text-primary">Imagen Actual</h6>
                 </div>
                 <div class="card-body text-center">
-                    <img th:src="${producto.imagen}" alt="Imagen del producto" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: auto;" />
+                    <img th:src="${producto.imagen}" 
+                         alt="Imagen del producto" class="img-fluid rounded shadow-sm" style="max-width: 100%; height: auto;" />
                 </div>
             </div>
         </div>
@@ -490,7 +508,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Pastelería Córdova 2024</span>
+                        <span>Copyright &copy; Pastelería Córdova 2025</span>
                     </div>
                 </div>
             </footer>
@@ -559,6 +577,54 @@
       });
 
     })(jQuery);
+    
+    // Funciones para notificaciones (como en dashboard)
+    function manejarClickNotificacion(elemento) {
+        var tipo = elemento.dataset.tipo;
+        var id = elemento.dataset.id;
+        var url = elemento.dataset.url;
+        
+        if (url && url !== '#') {
+            window.location.href = url;
+        } else {
+            console.log('Notificación clickeada:', { tipo, id });
+        }
+    }
+    
+    function manejarClickMensaje(elemento) {
+        var tipo = elemento.dataset.tipo;
+        var id = elemento.dataset.id;
+        var url = elemento.dataset.url;
+        
+        if (url && url !== '#') {
+            window.location.href = url;
+        } else {
+            console.log('Mensaje clickeado:', { tipo, id });
+        }
+    }
+    
+    // Manejar dropdowns
+    $(document).ready(function() {
+        $('#alertsDropdown, #messagesDropdown').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const $dropdown = $(this).siblings('.dropdown-menu');
+            
+            // Cerrar todos los otros dropdowns
+            $('.dropdown-menu').not($dropdown).removeClass('show');
+            
+            // Toggle el dropdown actual
+            $dropdown.toggleClass('show');
+        });
+        
+        // Cerrar dropdowns al hacer click fuera
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.dropdown').length) {
+                $('.dropdown-menu').removeClass('show');
+            }
+        });
+    });
     </script>
 
 </body>

@@ -267,7 +267,7 @@
 
   <!-- Información del producto -->
   <div class="product-info">
-    <img th:src="@{'/uploads/productos/imagenes/' + ${producto.imagen}}" 
+    <img th:src="${producto.imagen != null ? producto.imagen : '/imagenes/producto-default.jpg'}" 
          th:alt="${producto.nombre}" 
          onerror="this.src='/imagenes/producto-default.jpg'">
     <div class="product-details">

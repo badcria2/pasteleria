@@ -29,7 +29,25 @@ public class HomeController {
             productos = productoService.findAllProductos();
         }
 
-        model.addAttribute("productos", productos);
+		// Normalizar rutas de imágenes
+		productos.forEach(producto -> {
+			if (producto.getImagen() != null) {
+				String imagen = producto.getImagen();
+				// Si no empieza con /, agregar la ruta completa
+				if (!imagen.startsWith("/")) {
+					// Si ya contiene "Imagenes/" o "imagenes/", no duplicar
+					if (imagen.toLowerCase().contains("imagenes/")) {
+						producto.setImagen("/uploads/productos/" + imagen);
+					} else {
+						producto.setImagen("/uploads/productos/imagenes/" + imagen);
+					}
+				}
+				// Si empieza con / pero no contiene uploads, corregir
+				else if (!imagen.contains("/uploads/") && imagen.toLowerCase().contains("imagenes/")) {
+					producto.setImagen("/uploads/productos/" + imagen.substring(1));
+				}
+			}
+		});        model.addAttribute("productos", productos);
         model.addAttribute("categoria", categoria);
 
         List<Resena> reseñas = resenaService.getResenasAprobadas();

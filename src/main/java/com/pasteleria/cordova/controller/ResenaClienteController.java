@@ -59,7 +59,23 @@ public class ResenaClienteController {
             Producto producto = productoService.findById(productoId)
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-            // Verificar que el pedido pertenece al cliente autenticado
+			// Normalizar ruta de imagen
+			if (producto.getImagen() != null) {
+				String imagen = producto.getImagen();
+				// Si no empieza con /, agregar la ruta completa
+				if (!imagen.startsWith("/")) {
+					// Si ya contiene "Imagenes/" o "imagenes/", no duplicar
+					if (imagen.toLowerCase().contains("imagenes/")) {
+						producto.setImagen("/uploads/productos/" + imagen);
+					} else {
+						producto.setImagen("/uploads/productos/imagenes/" + imagen);
+					}
+				}
+				// Si empieza con / pero no contiene uploads, corregir
+				else if (!imagen.contains("/uploads/") && imagen.toLowerCase().contains("imagenes/")) {
+					producto.setImagen("/uploads/productos/" + imagen.substring(1));
+				}
+			}            // Verificar que el pedido pertenece al cliente autenticado
             if (!pedido.getCliente().getClienteId().equals(usuario.getId())) {
                 redirectAttributes.addFlashAttribute("errorMessage", "No tienes permiso para revisar este pedido.");
                 return "redirect:/pedidos/mis-compras";

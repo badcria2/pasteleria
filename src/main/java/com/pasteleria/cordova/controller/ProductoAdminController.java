@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Paths;
 
 import java.util.List;
 
@@ -51,6 +52,26 @@ public class ProductoAdminController {
 		} else {
 			productos = productoService.findAllProductos();
 		}
+		
+		// Normalizar rutas de imágenes
+		productos.forEach(producto -> {
+			if (producto.getImagen() != null) {
+				String imagen = producto.getImagen();
+				// Si no empieza con /, agregar la ruta completa
+				if (!imagen.startsWith("/")) {
+					// Si ya contiene "Imagenes/" o "imagenes/", no duplicar
+					if (imagen.toLowerCase().contains("imagenes/")) {
+						producto.setImagen("/uploads/productos/" + imagen);
+					} else {
+						producto.setImagen("/uploads/productos/imagenes/" + imagen);
+					}
+				}
+				// Si empieza con / pero no contiene uploads, corregir
+				else if (!imagen.contains("/uploads/") && imagen.toLowerCase().contains("imagenes/")) {
+					producto.setImagen("/uploads/productos/" + imagen.substring(1));
+				}
+			}
+		});
 		
 		model.addAttribute("productos", productos);
 		
@@ -85,17 +106,24 @@ public class ProductoAdminController {
 		// Manejo simple de subida de imagen
 		if (imagenFile != null && !imagenFile.isEmpty()) {
 			try {
-				String uploadDir = "src/main/resources/static/uploads/productos";
+				// Usar ruta relativa desde el directorio de trabajo actual (donde está el proyecto)
+				String projectDir = System.getProperty("user.dir");
+				String uploadDir = projectDir + "/src/main/resources/static/uploads/productos/imagenes";
 				Path uploadPath = Paths.get(uploadDir);
 				if (!Files.exists(uploadPath)) {
 					Files.createDirectories(uploadPath);
 				}
+				
 				String originalFilename = imagenFile.getOriginalFilename();
-				// Puedes mejorar el nombre para evitar colisiones
-				Path filePath = uploadPath.resolve(originalFilename);
+				// Generar nombre único para evitar colisiones
+				String timestamp = String.valueOf(System.currentTimeMillis());
+				String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+				String uniqueFilename = "producto_" + timestamp + extension;
+				
+				Path filePath = uploadPath.resolve(uniqueFilename);
 				imagenFile.transferTo(filePath.toFile());
-				// Guardar path relativo para servir desde /uploads/productos/
-				producto.setImagen("/uploads/productos/" + originalFilename);
+				// Guardar path relativo para servir desde /uploads/productos/imagenes/
+				producto.setImagen("/uploads/productos/imagenes/" + uniqueFilename);
 			} catch (IOException e) {
 				redirectAttributes.addFlashAttribute("errorMessage", "Error al subir la imagen: " + e.getMessage());
 				return "redirect:/admin/productos";
@@ -115,6 +143,25 @@ public class ProductoAdminController {
 			redirectAttributes.addFlashAttribute("errorMessage", "Producto no encontrado.");
 			return "redirect:/admin/productos";
 		}
+		
+		// Normalizar la ruta de la imagen si existe
+		if (producto.getImagen() != null) {
+			String imagen = producto.getImagen();
+			// Si no empieza con /, agregar la ruta completa
+			if (!imagen.startsWith("/")) {
+				// Si ya contiene "Imagenes/" o "imagenes/", no duplicar
+				if (imagen.toLowerCase().contains("imagenes/")) {
+					producto.setImagen("/uploads/productos/" + imagen);
+				} else {
+					producto.setImagen("/uploads/productos/imagenes/" + imagen);
+				}
+			}
+			// Si empieza con / pero no contiene uploads, corregir
+			else if (!imagen.contains("/uploads/") && imagen.toLowerCase().contains("imagenes/")) {
+				producto.setImagen("/uploads/productos/" + imagen.substring(1));
+			}
+		}
+		
 		model.addAttribute("producto", producto);
 		
 		// Agregar notificaciones para la topbar

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Pastelería Córdova</title>
+    
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <link rel="shortcut icon" th:href="@{/imagenes/Logo.jpg}" type="image/x-icon">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">Pastelería Córdova</div>
+            <div class="search-bar">
+                <form th:action="@{/}" method="get">
+                    <input type="text" name="buscar" th:value="${param.buscar}"
+                           placeholder="Buscar productos..." id="searchInput">
+                    <button type="submit">🔍</button>
+                </form>
+            </div>
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Inicio</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a th:href="@{/contacto}">Contacto</a></li>
+                <li><a href="#opiniones">Opiniones</a></li>
+
+                <!-- Lógica para mostrar Iniciar Sesión / Nombre de Usuario + Carrito + Cerrar Sesión -->
+                <li sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/login}">Iniciar Sesión</a>
+                </li>
+                <li sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/registro}">Registrarse</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <!-- Icono o enlace al carrito -->
+                    <a th:href="@{/carrito}" class="cart-icon-link">
+                        🛒 <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a href="#">Hola, <span sec:authentication="name">Usuario</span>!</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="nav-logout-btn">Cerrar Sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section style="background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #E8956C 100%); 
+                    color: white; padding: 4rem 2rem; text-align: center; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                    background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2220%22 cy=%2220%22 r=%222%22 fill=%22%23ffffff%22 opacity=%220.1%22/><circle cx=%2280%22 cy=%2240%22 r=%221.5%22 fill=%22%23ffffff%22 opacity=%220.1%22/><circle cx=%2240%22 cy=%2280%22 r=%221%22 fill=%22%23ffffff%22 opacity=%220.1%22/></svg>'); 
+                    background-size: 50px 50px;"></div>
+        <div style="position: relative; z-index: 1; max-width: 800px; margin: 0 auto;">
+            <h1 style="font-size: 3rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Contáctanos</h1>
+            <p style="font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.9;">Estamos aquí para atenderte y hacer realidad tus deseos dulces</p>
+            <div style="display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <a href="#info-contacto" 
+                   style="background: rgba(255,255,255,0.2); padding: 0.75rem 1.5rem; border-radius: 25px; 
+                          color: white; text-decoration: none; backdrop-filter: blur(10px); 
+                          border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease;"
+                   onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                   onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                    📍 Nuestras Sedes
+                </a>
+                <a href="https://wa.me/51919714277?text=Hola,%20me%20interesa%20hacer%20un%20pedido" 
+                   target="_blank"
+                   style="background: #25D366; padding: 0.75rem 1.5rem; border-radius: 25px; 
+                          color: white; text-decoration: none; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); 
+                          transition: all 0.3s ease;"
+                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.5)'"
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(37, 211, 102, 0.4)'">
+                    📱 WhatsApp Directo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <main style="padding: 0; max-width: 100%; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" id="info-contacto">
+        <div style="padding: 4rem 2rem; background: #FFF5E6;">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <div style="text-align: center; margin-bottom: 3rem;">
+                    <h2 style="color: #8B4513; font-size: 2.2rem; margin-bottom: 1rem;">Información de Contacto</h2>
+                    <div style="width: 80px; height: 4px; background: linear-gradient(90deg, #8B4513, #E8956C); 
+                                margin: 0 auto; border-radius: 2px;"></div>
+                </div>
+        
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                    <!-- Sedes -->
+                    <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                                box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                                border-top: 5px solid #8B4513; position: relative; overflow: hidden;"
+                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                                    background: linear-gradient(45deg, #F5DEB3, transparent); 
+                                    border-radius: 50%; opacity: 0.1;"></div>
+                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                            <div style="background: linear-gradient(135deg, #8B4513, #A0522D); color: white; 
+                                        padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                        box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);">📍</div>
+                            <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">Nuestras Sedes</h3>
+                        </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #6B3410;">Lima Norte:</strong><br>
+                    <span style="color: #666;">Jirón Las Magnolias 501, Lima 15812</span>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #6B3410;">Villa María del Triunfo:</strong><br>
+                    <span style="color: #666;">Av. José Carlos Mariátegui 1780, VMT 15803</span>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #6B3410;">Villa María del Triunfo 2:</strong><br>
+                    <span style="color: #666;">Av. José Carlos Mariátegui 1090, VMT 15811</span>
+                </div>
+                <div>
+                    <strong style="color: #6B3410;">San Juan de Miraflores:</strong><br>
+                    <span style="color: #666;">Av. San Juan 609-B</span>
+                </div>
+            </div>
+
+                    <!-- Teléfono -->
+                    <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                                box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                                border-top: 5px solid #E8956C; position: relative; overflow: hidden;"
+                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                                    background: linear-gradient(45deg, #E8956C, transparent); 
+                                    border-radius: 50%; opacity: 0.1;"></div>
+                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                            <div style="background: linear-gradient(135deg, #E8956C, #F4A582); color: white; 
+                                        padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                        box-shadow: 0 4px 15px rgba(232, 149, 108, 0.3);">📞</div>
+                            <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">Teléfono</h3>
+                        </div>
+                        <a href="tel:+51919714277" 
+                           style="color: #E8956C; font-size: 1.8rem; font-weight: bold; margin: 0; text-decoration: none; 
+                                  display: block; margin-bottom: 0.5rem; position: relative; z-index: 1;"
+                           onmouseover="this.style.color='#8B4513'"
+                           onmouseout="this.style.color='#E8956C'">+51 919714277</a>
+                        <p style="color: #666; margin: 0; position: relative; z-index: 1;">Llámanos para pedidos y consultas</p>
+                    </div>
+
+                    <!-- Email -->
+                    <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                                box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                                border-top: 5px solid #A0522D; position: relative; overflow: hidden;"
+                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                                    background: linear-gradient(45deg, #A0522D, transparent); 
+                                    border-radius: 50%; opacity: 0.1;"></div>
+                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                            <div style="background: linear-gradient(135deg, #A0522D, #8B4513); color: white; 
+                                        padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                        box-shadow: 0 4px 15px rgba(160, 82, 45, 0.3);">✉️</div>
+                            <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">Email</h3>
+                        </div>
+                        <a href="mailto:pasteleria-cordova@gmail.com" 
+                           style="color: #A0522D; font-size: 1.2rem; font-weight: bold; margin: 0; text-decoration: none; 
+                                  display: block; margin-bottom: 0.5rem; position: relative; z-index: 1;"
+                           onmouseover="this.style.color='#8B4513'"
+                           onmouseout="this.style.color='#A0522D'">pasteleria-cordova@gmail.com</a>
+                        <p style="color: #666; margin: 0; position: relative; z-index: 1;">Escríbenos tus consultas</p>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                                box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                                border-top: 5px solid #25D366; position: relative; overflow: hidden;"
+                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                        <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                                    background: linear-gradient(45deg, #25D366, transparent); 
+                                    border-radius: 50%; opacity: 0.1;"></div>
+                        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                            <div style="background: linear-gradient(135deg, #25D366, #20B358); color: white; 
+                                        padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">💬</div>
+                            <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">WhatsApp</h3>
+                        </div>
+                        <a href="https://wa.me/51919714277?text=Hola,%20me%20interesa%20hacer%20un%20pedido" 
+                           target="_blank"
+                           style="display: inline-block; background: linear-gradient(135deg, #25D366, #20B358); 
+                                  color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 25px; 
+                                  font-weight: bold; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); 
+                                  transition: all 0.3s ease; position: relative; z-index: 1;"
+                           onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(37, 211, 102, 0.5)'"
+                           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.4)'">
+                            📱 Enviar mensaje directo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Horarios de Atención -->
+        <section style="background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #E8956C 100%); 
+                        color: white; padding: 4rem 2rem; text-align: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                        background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%), 
+                                          radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%); 
+                        background-size: 100px 100px;"></div>
+            <div style="position: relative; z-index: 1; max-width: 800px; margin: 0 auto;">
+                <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                    🕒 Horarios de Atención
+                </h2>
+                <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">Nuestras puertas siempre abiertas para ti</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 15px; 
+                                backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                        <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">Lunes a Viernes</div>
+                        <div style="font-size: 1.4rem; color: #FFF8DC;">8:00 AM - 8:00 PM</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 15px; 
+                                backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                        <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">Sábados</div>
+                        <div style="font-size: 1.4rem; color: #FFF8DC;">9:00 AM - 6:00 PM</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 15px; 
+                                backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                        <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">Domingos</div>
+                        <div style="font-size: 1.4rem; color: #FFF8DC;">10:00 AM - 5:00 PM</div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 15px; 
+                            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: inline-block;">
+                    <p style="margin: 0; font-size: 1.1rem; font-style: italic;">
+                        🍰 ¡Visítanos en cualquiera de nuestras sedes y disfruta de nuestros deliciosos productos! 🎂
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background: linear-gradient(45deg, #6B3410, #8B4513); color: white; text-align: center; 
+                   padding: 3rem 2rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                    background-image: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.05) 70%, transparent 70%); 
+                    background-size: 20px 20px;"></div>
+        <div style="position: relative; z-index: 1;">
+            <div style="font-size: 1.5rem; margin-bottom: 1rem;">🍰 Pastelería Córdova 🎂</div>
+            <p style="margin: 0; opacity: 0.9;">&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; opacity: 0.7;">Tradición, calidad y sabor en cada bocado</p>
+        </div>
+    </footer>
+</body>
+</html>

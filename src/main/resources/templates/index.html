@@ -22,9 +22,9 @@
             </form>
         </div>
         <ul class="nav-links">
-            <li><a href="#inicio">Inicio</a></li>
+            <li><a th:href="@{/}">Inicio</a></li>
             <li><a href="#productos">Productos</a></li>
-            <li><a href="#contacto">Contacto</a></li>
+            <li><a th:href="@{/contacto}">Contacto</a></li>
             <li><a href="#opiniones">Opiniones</a></li>
 
             <!-- Lógica para mostrar Iniciar Sesión / Nombre de Usuario + Carrito + Cerrar Sesión -->
@@ -110,7 +110,7 @@
         <!-- Producto generado dinámicamente desde BD -->
         <div class="producto-card" th:each="producto : ${productos}" th:attr="data-nombre=${producto.nombre}">
             <div class="producto-img-container">
-                <img th:src="${producto.imagen != null ? '/uploads/productos/' + producto.imagen : '/Imagenes/default.jpg'}"
+                <img th:src="${producto.imagen != null ? producto.imagen : '/Imagenes/default.jpg'}"
                      th:alt="${producto.nombre}"
                      onerror="this.src='/Imagenes/default.jpg'" />
             </div>
@@ -172,59 +172,113 @@
 </section>
 
 <!-- Contacto Section -->
-<section id="contacto" class="contacto">
-    <h2>Contáctanos</h2>
-    <div class="contacto-content">
-        <div class="contacto-info">
-            <h3 style="color: #8B4513; margin-bottom: 1rem;">Información de Contacto</h3>
-            <div class="info-item">
-                <span>📍</span>
-                <div>
-                    <strong>Sedes: </strong><br>
-                    Jirón Las Magnolias 501, Lima 15812 /
-                    Av. José Carlos Mariátegui 1780, VMT 15803 /
-                    Av. José Carlos Mariátegui 1090, VMT 15811 /
-                    Av. San Juan 609-B, San Juan de Miraflores
-                </div>
-            </div>
-            <div class="info-item">
-                <span>📞</span>
-                <div>
-                    <strong>Teléfono:</strong><br>
-                    +51 919714277
-                </div>
-            </div>
-            <div class="info-item">
-                <span>📧</span>
-                <div>
-                    <strong>Email:</strong><br>
-                    pasteleriacordova@gmail.com
-                </div>
-            </div>
-            <div class="info-item">
-                <span>💬</span>
-                <div>
-                    <strong>WhatsApp:</strong><br>
-                    <a href="https://wa.me/51919714277" style="color: #25d366; text-decoration: none;">Enviar mensaje</a>
-                </div>
-            </div>
+<section id="contacto" style="background: #FFF5E6; padding: 4rem 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="color: #8B4513; font-size: 2.2rem; margin-bottom: 1rem;">Contáctanos</h2>
+            <div style="width: 80px; height: 4px; background: linear-gradient(90deg, #8B4513, #E8956C); 
+                        margin: 0 auto; border-radius: 2px;"></div>
         </div>
 
-        <div class="contacto-form">
-            <h3 style="color: #8B4513; margin-bottom: 1rem;">Envíanos un Mensaje</h3>
-            <input type="text" placeholder="Nombre" required>
-            <input type="email" placeholder="Email" required>
-            <input type="tel" placeholder="Teléfono" required>
-            <textarea rows="5" placeholder="Mensaje" required></textarea>
-            <button class="btn" style="width: 100%;">Enviar Mensaje</button>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+            <!-- Sedes -->
+            <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                        border-top: 5px solid #8B4513; position: relative; overflow: hidden;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                            background: linear-gradient(45deg, #F5DEB3, transparent); 
+                            border-radius: 50%; opacity: 0.1;"></div>
+                <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                    <div style="background: linear-gradient(135deg, #8B4513, #A0522D); color: white; 
+                                padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);">📍</div>
+                    <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">Nuestras Sedes</h3>
+                </div>
+                <div style="margin-bottom: 1rem; position: relative; z-index: 1;">
+                    <strong style="color: #6B3410;">Lima Norte:</strong><br>
+                    <span style="color: #666;">Jirón Las Magnolias 501, Lima 15812</span>
+                </div>
+                <div style="margin-bottom: 1rem; position: relative; z-index: 1;">
+                    <strong style="color: #6B3410;">Villa María del Triunfo:</strong><br>
+                    <span style="color: #666;">Av. José Carlos Mariátegui 1780, VMT 15803</span>
+                </div>
+                <div style="margin-bottom: 1rem; position: relative; z-index: 1;">
+                    <strong style="color: #6B3410;">Villa María del Triunfo 2:</strong><br>
+                    <span style="color: #666;">Av. José Carlos Mariátegui 1090, VMT 15811</span>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <strong style="color: #6B3410;">San Juan de Miraflores:</strong><br>
+                    <span style="color: #666;">Av. San Juan 609-B</span>
+                </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                        border-top: 5px solid #E8956C; position: relative; overflow: hidden;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                            background: linear-gradient(45deg, #E8956C, transparent); 
+                            border-radius: 50%; opacity: 0.1;"></div>
+                <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                    <div style="background: linear-gradient(135deg, #E8956C, #F4A582); color: white; 
+                                padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                box-shadow: 0 4px 15px rgba(232, 149, 108, 0.3);">📞</div>
+                    <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">Teléfono</h3>
+                </div>
+                <a href="tel:+51919714277" 
+                   style="color: #E8956C; font-size: 1.8rem; font-weight: bold; margin: 0; text-decoration: none; 
+                          display: block; margin-bottom: 0.5rem; position: relative; z-index: 1;"
+                   onmouseover="this.style.color='#8B4513'"
+                   onmouseout="this.style.color='#E8956C'">+51 919714277</a>
+                <p style="color: #666; margin: 0; position: relative; z-index: 1;">Llámanos para pedidos y consultas</p>
+            </div>
+
+            <!-- WhatsApp -->
+            <div style="background: white; padding: 2.5rem; border-radius: 20px; 
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; 
+                        border-top: 5px solid #25D366; position: relative; overflow: hidden;"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.1)'">
+                <div style="position: absolute; top: -50%; right: -50%; width: 100px; height: 100px; 
+                            background: linear-gradient(45deg, #25D366, transparent); 
+                            border-radius: 50%; opacity: 0.1;"></div>
+                <div style="display: flex; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+                    <div style="background: linear-gradient(135deg, #25D366, #20B358); color: white; 
+                                padding: 1rem; border-radius: 15px; margin-right: 1rem; font-size: 1.5rem; 
+                                box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);">💬</div>
+                    <h3 style="color: #8B4513; margin: 0; font-size: 1.4rem; font-weight: 600;">WhatsApp</h3>
+                </div>
+                <a href="https://wa.me/51919714277?text=Hola,%20me%20interesa%20hacer%20un%20pedido" 
+                   target="_blank"
+                   style="display: inline-block; background: linear-gradient(135deg, #25D366, #20B358); 
+                          color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 25px; 
+                          font-weight: bold; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); 
+                          transition: all 0.3s ease; position: relative; z-index: 1;"
+                   onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(37, 211, 102, 0.5)'"
+                   onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.4)'">
+                    📱 Chatea con nosotros
+                </a>
+                <p style="color: #666; margin: 0.5rem 0 0 0; position: relative; z-index: 1;">Respuesta inmediata garantizada</p>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- Footer -->
-<footer>
-    <p>&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
-    <p>4 locales en Lima | Tradición y Calidad desde siempre</p>
+<footer style="background: linear-gradient(45deg, #6B3410, #8B4513); color: white; text-align: center; 
+               padding: 3rem 2rem; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                background-image: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.05) 70%, transparent 70%); 
+                background-size: 20px 20px;"></div>
+    <div style="position: relative; z-index: 1;">
+        <div style="font-size: 1.5rem; margin-bottom: 1rem;">🍰 Pastelería Córdova 🍰</div>
+        <p style="margin: 0; opacity: 0.9;">&copy; 2025 Pastelería Córdova. Todos los derechos reservados.</p>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; opacity: 0.7;">4 locales en Lima | Tradición, calidad y sabor en cada bocado</p>
+    </div>
 </footer>
 
 <!-- Botón flotante de WhatsApp -->

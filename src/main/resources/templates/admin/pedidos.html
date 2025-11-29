@@ -644,6 +644,25 @@
                                                     <p class="text-muted small" th:text="${pedido.cliente?.usuario?.nombre ?: 'Sin nombre'}">Sin nombre</p>
                                                     <p class="mb-1"><strong>Método de Pago:</strong></p>
                                                     <p class="text-muted small" th:text="${pedido.metodoPago ?: 'No especificado'}">No especificado</p>
+                                                    
+                                                    <!-- Sección de Factura para Admin -->
+                                                    <hr class="my-3">
+                                                    <h6>📄 Factura</h6>
+                                                    <div th:if="${pedido.estado == 'COMPLETADO'}" class="d-grid gap-2">
+                                                        <a th:href="@{/factura/admin/descargar/{id}(id=${pedido.id})}" 
+                                                           class="btn btn-sm btn-success"
+                                                           title="Descargar factura PDF">
+                                                            <i class="fas fa-download me-1"></i> Descargar Factura
+                                                        </a>
+                                                    </div>
+                                                    <div th:unless="${pedido.estado == 'COMPLETADO'}" class="text-muted small">
+                                                        <span th:switch="${pedido.estado}">
+                                                            <span th:case="'PENDIENTE'">⏳ Disponible cuando sea completado</span>
+                                                            <span th:case="'EN_PROCESO'">⚙️ Disponible cuando sea completado</span>
+                                                            <span th:case="'CANCELADO'">❌ No disponible (cancelado)</span>
+                                                            <span th:case="*">❓ Estado desconocido</span>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

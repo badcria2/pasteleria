@@ -259,4 +259,129 @@
     transition: all 0.3s ease;
 }
 
+/* Estilos para la sección de factura */
+.pedido-factura, .pedido-factura-info {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    border-left: 4px solid #e91e63;
+}
+
+.pedido-factura .factura-info h4,
+.pedido-factura-info .factura-info h4 {
+    color: #e91e63;
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.factura-status {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.factura-disponible {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.factura-pendiente {
+    color: #ffc107;
+    font-weight: 500;
+}
+
+.factura-proceso {
+    color: #17a2b8;
+    font-weight: 500;
+}
+
+.factura-cancelado {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.factura-desconocido {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.factura-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-factura {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-vista {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    border-color: #17a2b8;
+}
+
+.btn-vista:hover {
+    background: linear-gradient(135deg, #138496 0%, #0f6674 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-descarga {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-color: #28a745;
+}
+
+.btn-descarga:hover {
+    background: linear-gradient(135deg, #20c997 0%, #1e7e34 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.factura-icon {
+    font-size: 1.1rem;
+}
+
+.factura-text {
+    white-space: nowrap;
+}
+
+/* Responsive para botones de factura */
+@media (max-width: 768px) {
+    .factura-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .btn-factura {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .pedido-factura, .pedido-factura-info {
+        padding: 1rem;
+    }
+}
+
+/* Animación de hover para las tarjetas de pedido con facturas */
+.pedido-card:has(.pedido-factura):hover .pedido-factura {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f3f4 100%);
+    transition: background 0.3s ease;
+}
+
 /* Puedes añadir un estilo para la vista de detalle_pedido.html si la implementas */

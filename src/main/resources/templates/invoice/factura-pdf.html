@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura - Pastelería Córdova</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .invoice-header {
+            border-bottom: 3px solid #e91e63;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #e91e63;
+            margin-bottom: 8px;
+        }
+        
+        .company-details {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .invoice-title {
+            text-align: right;
+            flex: 0 0 auto;
+        }
+        
+        .invoice-title h1 {
+            font-size: 32px;
+            color: #e91e63;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .invoice-number {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .client-info, .order-info {
+            flex: 0 0 48%;
+        }
+        
+        .info-section h3 {
+            color: #e91e63;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .info-item {
+            margin-bottom: 8px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .items-table th {
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #c2185b;
+        }
+        
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .items-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        .items-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .totals-section {
+            float: right;
+            width: 300px;
+            margin-bottom: 30px;
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+        }
+        
+        .totals-table .label {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .totals-table .total-final {
+            background: linear-gradient(135deg, #e91e63 0%, #f06292 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .footer {
+            clear: both;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            text-align: center;
+            color: #666;
+        }
+        
+        .thank-you {
+            font-size: 18px;
+            color: #e91e63;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .contact-info {
+            margin-top: 15px;
+            line-height: 1.8;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-entregado {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .status-confirmado {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        .status-en-reparto {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .status-pendiente {
+            background-color: #9e9e9e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-header">
+        <div class="company-info">
+            <div class="company-logo">🧁 Pastelería Córdova</div>
+            <div class="company-details">
+                Deliciosos pasteles artesanales<br>
+                📍 Dirección de la pastelería<br>
+                📞 Teléfono: +51 999 999 999<br>
+                ✉️ Email: info@pasteleria-cordova.com
+            </div>
+        </div>
+        <div class="invoice-title">
+            <h1>FACTURA</h1>
+            <div class="invoice-number">N° <span th:text="${pedido.id}">001</span></div>
+        </div>
+    </div>
+    
+    <div class="invoice-info">
+        <div class="client-info info-section">
+            <h3>👤 Información del Cliente</h3>
+            <div class="info-item">
+                <span class="info-label">Nombre:</span>
+                <span th:text="${pedido.cliente.usuario.nombre}">Cliente Ejemplo</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span th:text="${pedido.cliente.usuario.email}">cliente@email.com</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Teléfono:</span>
+                <span th:text="${pedido.cliente.usuario.telefono}">999-999-999</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Dirección:</span>
+                <span th:text="${pedido.direccionEnvio}">Dirección del cliente</span>
+            </div>
+        </div>
+        
+        <div class="order-info info-section">
+            <h3>📋 Información del Pedido</h3>
+            <div class="info-item">
+                <span class="info-label">Fecha:</span>
+                <span th:text="${#temporals.format(pedido.fecha, 'dd/MM/yyyy')}">01/01/2024</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Estado:</span>
+                <span th:class="'status-badge status-' + ${#strings.toLowerCase(pedido.estado)}" 
+                      th:text="${pedido.estado}">ENTREGADO</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Método de Pago:</span>
+                <span th:text="${pedido.metodoPago}">Efectivo</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Costo de Envío:</span>
+                <span th:text="'S/. ' + ${#numbers.formatDecimal(pedido.costoEnvio, 1, 2)}">S/. 5.00</span>
+            </div>
+        </div>
+    </div>
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-right">Precio Unit.</th>
+                <th class="text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="detalle : ${pedido.detalles}">
+                <td>
+                    <strong th:text="${detalle.producto.nombre}">Torta de Chocolate</strong>
+                    <div style="font-size: 10px; color: #666; margin-top: 2px;" 
+                         th:if="${detalle.producto.descripcion}" 
+                         th:text="${detalle.producto.descripcion}">Descripción del producto</div>
+                </td>
+                <td class="text-center" th:text="${detalle.cantidad}">1</td>
+                <td class="text-right" th:text="'S/. ' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 2)}">S/. 25.00</td>
+                <td class="text-right" th:text="'S/. ' + ${#numbers.formatDecimal(detalle.subTotal, 1, 2)}">S/. 25.00</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="totals-section">
+        <table class="totals-table">
+            <tr>
+                <td class="label">Subtotal:</td>
+                <td class="text-right" th:text="'S/. ' + ${#numbers.formatDecimal(subtotal, 1, 2)}">S/. 45.00</td>
+            </tr>
+            <tr>
+                <td class="label">Costo de Envío:</td>
+                <td class="text-right" th:text="'S/. ' + ${#numbers.formatDecimal(pedido.costoEnvio, 1, 2)}">S/. 5.00</td>
+            </tr>
+            <tr>
+                <td class="label total-final">TOTAL:</td>
+                <td class="text-right total-final" th:text="'S/. ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/. 50.00</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <div class="thank-you">¡Gracias por tu compra! 🎂</div>
+        <p>Esperamos que disfrutes nuestros deliciosos pasteles.</p>
+        <div class="contact-info">
+            <strong>Pastelería Córdova</strong><br>
+            📱 WhatsApp: +51 999 999 999 | 🌐 www.pasteleria-cordova.com<br>
+            Síguenos en nuestras redes sociales para más promociones
+        </div>
+    </div>
+</body>
+</html>

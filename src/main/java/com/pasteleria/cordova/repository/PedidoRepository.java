@@ -29,7 +29,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
     List<Pedido> findByClienteWithDetallesAndProductosOrderByFechaPedidoDesc(@Param("cliente") Cliente cliente);
 
     // Opcional: si tienes un solo pedido por ID y necesitas los detalles
-    @Query("SELECT p FROM Pedido p JOIN FETCH p.detalles dp JOIN FETCH dp.producto pr WHERE p.id = :id")
+    @Query("SELECT DISTINCT p FROM Pedido p " +
+           "LEFT JOIN FETCH p.cliente c " +
+           "LEFT JOIN FETCH c.usuario u " +
+           "LEFT JOIN FETCH p.detalles d " +
+           "LEFT JOIN FETCH d.producto pr " +
+           "WHERE p.id = :id")
     Optional<Pedido> findByIdWithDetallesAndProductos(@Param("id") Integer id);
     
     // Métodos para notificaciones

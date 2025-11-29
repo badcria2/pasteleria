@@ -99,6 +99,7 @@ public class PedidoService {
         return pedidoRepository.findByClienteOrderByFechaDesc(cliente);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Pedido> getPedidoById(Integer pedidoId) {
         return pedidoRepository.findById(pedidoId);
     }

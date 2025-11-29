@@ -122,6 +122,44 @@
           </div>
         </div>
       </div>
+      
+      <!-- Sección de Factura -->
+      <div class="pedido-factura" th:if="${pedido.estado == 'COMPLETADO'}">
+        <div class="factura-info">
+          <h4>📄 Factura</h4>
+          <p class="factura-status">
+            <span class="factura-disponible">✓ Factura disponible para descarga</span>
+          </p>
+        </div>
+        <div class="factura-actions">
+          <a th:href="@{/factura/vista/{id}(id=${pedido.id})}" 
+             class="btn-factura btn-vista" 
+             target="_blank"
+             title="Ver factura en el navegador">
+            <span class="factura-icon">👁️</span>
+            <span class="factura-text">Ver Factura</span>
+          </a>
+          <a th:href="@{/factura/descargar/{id}(id=${pedido.id})}" 
+             class="btn-factura btn-descarga"
+             title="Descargar factura PDF">
+            <span class="factura-icon">⬇️</span>
+            <span class="factura-text">Descargar PDF</span>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Estado de factura para otros estados -->
+      <div class="pedido-factura-info" th:unless="${pedido.estado == 'COMPLETADO'}">
+        <div class="factura-info">
+          <h4>📄 Factura</h4>
+          <p class="factura-status" th:switch="${pedido.estado}">
+            <span th:case="'PENDIENTE'" class="factura-pendiente">⏳ Factura disponible cuando el pedido sea completado</span>
+            <span th:case="'EN_PROCESO'" class="factura-proceso">⚙️ Factura disponible cuando el pedido sea completado</span>
+            <span th:case="'CANCELADO'" class="factura-cancelado">❌ No disponible para pedidos cancelados</span>
+            <span th:case="*" class="factura-desconocido">❓ Estado de factura desconocido</span>
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </main>

@@ -1,5 +1,6 @@
 package com.pasteleria.cordova.config;
 
+import com.pasteleria.cordova.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -29,43 +30,44 @@ public class AuthEventsListener implements ApplicationListener<ApplicationEvent>
         if (event instanceof AuthenticationSuccessEvent) {
             AuthenticationSuccessEvent ev = (AuthenticationSuccessEvent) event;
             Object principal = ev.getAuthentication().getPrincipal();
-            logger.info("[AUTH EVENT] AuthenticationSuccess for principal={}", principal);
-            logger.info("[AUTH EVENT] authorities={}", ev.getAuthentication().getAuthorities());
+            // 🔐 Sanitizar datos antes de logging para prevenir CRLF injection
+            String safePrincipal = SecurityUtils.sanitizeInput(principal != null ? principal.toString() : "null");
+            logger.info("[AUTH EVENT] AuthenticationSuccess for principal type: {}", principal != null ? principal.getClass().getSimpleName() : "null");
 
             // If principal is a username (String), try to log additional info
             if (principal instanceof String) {
-                String username = (String) principal;
-                usuarioRepository.findByEmail(username).ifPresent(u -> {
-                    logger.info("[AUTH EVENT] Usuario(id={}, email={}) encontrado en DB. passwordHashLength={}", u.getId(), u.getEmail(), u.getPassword() != null ? u.getPassword().length() : 0);
-                });
+                String username = SecurityUtils.sanitizeInput((String) principal);
+                if (SecurityUtils.isInputSecure(username)) {
+                    usuarioRepository.findByEmail(username).ifPresent(u -> {
+                        String safeEmail = SecurityUtils.sanitizeInput(u.getEmail());
+                        logger.info("[AUTH EVENT] Usuario encontrado en DB. ID: {} Email length: {}", u.getId(), safeEmail.length());
+                    });
+                }
             }
 
         } else if (event instanceof AuthenticationFailureBadCredentialsEvent) {
             AuthenticationFailureBadCredentialsEvent ev = (AuthenticationFailureBadCredentialsEvent) event;
             Object principal = ev.getAuthentication().getPrincipal();
-            logger.warn("[AUTH EVENT] AuthenticationFailureBadCredentials for principal={}", principal);
+            logger.warn("[AUTH EVENT] AuthenticationFailureBadCredentials for principal type: {}", 
+                       principal != null ? principal.getClass().getSimpleName() : "null");
 
             // Si es un string (email), comprobar si la contraseña enviada coincide con la guardada (solo para debug)
             try {
                 if (principal instanceof String) {
-                    String username = (String) principal;
-                    Object creds = ev.getAuthentication().getCredentials();
-                    String attempted = creds != null ? creds.toString() : null;
-                    usuarioRepository.findByEmail(username).ifPresent(u -> {
-                        String storedHash = u.getPassword();
-                        boolean matches = false;
-                        if (attempted != null && storedHash != null) {
-                            try {
-                                matches = passwordEncoder.matches(attempted, storedHash);
-                            } catch (Exception ex) {
-                                logger.warn("[AUTH EVENT] Error al comprobar passwordEncoder.matches: {}", ex.getMessage());
-                            }
-                        }
-                        logger.warn("[AUTH EVENT] Login attempt for user='{}'. storedHashLength={} matchesSubmittedPassword={}", username, storedHash != null ? storedHash.length() : 0, matches);
-                    });
+                    String username = SecurityUtils.sanitizeInput((String) principal);
+                    if (SecurityUtils.isInputSecure(username)) {
+                        usuarioRepository.findByEmail(username).ifPresent(u -> {
+                            // 🔐 NO loggear información sensible como contraseñas o hashes
+                            logger.warn("[AUTH EVENT] Failed login attempt for existing user. UserID: {}", u.getId());
+                        });
+                    } else {
+                        logger.warn("[AUTH EVENT] Failed login attempt with potentially malicious username");
+                    }
                 }
             } catch (Exception ex) {
-                logger.error("[AUTH EVENT] Error processing failure event: {}", ex.getMessage(), ex);
+                // 🔐 Usar mensaje seguro para errores
+                String secureMessage = SecurityUtils.createSecureErrorMessage(ex.getMessage());
+                logger.error("[AUTH EVENT] Error processing failure event: {}", secureMessage);
             }
         }
     }

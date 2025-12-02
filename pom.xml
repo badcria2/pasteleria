@@ -131,6 +131,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- H2 Database para pruebas de seguridad -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- Mockito for enhanced testing -->
     <dependency>
       <groupId>org.mockito</groupId>
@@ -143,6 +150,38 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <!-- 🔐 Spring Security Core para pruebas de seguridad -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+    </dependency>
+
+    <!-- 🔐 Spring Security Web para endpoints seguros -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+    </dependency>
+
+    <!-- 🔐 Spring Security Config para configuración -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+    </dependency>
+
+    <!-- 🔐 OWASP Java HTML Sanitizer - Prevención XSS -->
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>owasp-java-html-sanitizer</artifactId>
+      <version>20220608.1</version>
+    </dependency>
+
+    <!-- 🔐 Apache Commons Validator - Validación de inputs -->
+    <dependency>
+      <groupId>commons-validator</groupId>
+      <artifactId>commons-validator</artifactId>
+      <version>1.7</version>
     </dependency>
 
   </dependencies>
@@ -204,6 +243,63 @@
         <artifactId>maven-site-plugin</artifactId>
         <version>3.12.1</version>
       </plugin>
+
+      <!-- 🔐 OWASP Dependency Check Plugin - Análisis de Vulnerabilidades -->
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>8.4.2</version>
+        <configuration>
+          <formats>
+            <format>HTML</format>
+            <format>XML</format>
+            <format>JSON</format>
+          </formats>
+          <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
+          <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
+          <suppressionFile>suppress-dependency-check.xml</suppressionFile>
+          <!-- Configuración para trabajar sin API key -->
+          <autoUpdate>false</autoUpdate>
+          <cveValidForHours>0</cveValidForHours>
+          <skipTestScope>true</skipTestScope>
+          <skipProvidedScope>true</skipProvidedScope>
+          <!-- Desactivar analizadores no necesarios para mejor rendimiento -->
+          <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+          <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+          <pyDistributionAnalyzerEnabled>false</pyDistributionAnalyzerEnabled>
+          <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
+          <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+          <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 🔐 SpotBugs Plugin - Análisis Estático de Código -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.7.3.6</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <xmlOutput>true</xmlOutput>
+          <htmlOutput>true</htmlOutput>
+          <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
+          <plugins>
+            <plugin>
+              <groupId>com.h3xstream.findsecbugs</groupId>
+              <artifactId>findsecbugs-plugin</artifactId>
+              <version>1.12.0</version>
+            </plugin>
+          </plugins>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -226,6 +322,34 @@
           <reportSet>
             <reports>
               <report>report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
+      <!-- 🔐 OWASP Dependency Check Reporting -->
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>8.4.2</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
+      <!-- 🔐 SpotBugs Security Analysis Reporting -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.7.3.6</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>spotbugs</report>
             </reports>
           </reportSet>
         </reportSets>

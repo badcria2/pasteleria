@@ -1,5 +1,6 @@
 package com.pasteleria.cordova.config;
 
+import com.pasteleria.cordova.security.SecurityUtils;
 import com.pasteleria.cordova.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -86,7 +87,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
             // Verificar si hay una URL específica solicitada y si es válida
             String targetUrl = request.getParameter("targetUrl");
-            System.out.println("[AUTH SUCCESS] targetUrl parameter=" + targetUrl);
+            // 🔐 Sanitizar parámetro para prevenir HTTP Response Splitting
+            targetUrl = SecurityUtils.sanitizeInput(targetUrl);
+            System.out.println("[AUTH SUCCESS] targetUrl parameter (sanitized)");
 
             if (isAdmin) {
                 System.out.println("[AUTH SUCCESS] Redirecting admin to dashboard");
@@ -97,7 +100,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             if (isCliente) {
                 // Para clientes, verificar si hay una URL específica válida
                 if (targetUrl != null && !targetUrl.isEmpty() && isValidClientUrl(targetUrl)) {
-                    System.out.println("[AUTH SUCCESS] Redirecting cliente to targetUrl: " + targetUrl);
+                    System.out.println("[AUTH SUCCESS] Redirecting cliente to targetUrl");
                     response.sendRedirect(request.getContextPath() + targetUrl);
                 } else {
                     System.out.println("[AUTH SUCCESS] Redirecting cliente to home");
@@ -132,16 +135,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .requestCache().requestCache(requestCache())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/index", "/index.html", "/registro", "/login",
-                        "/css/**", "/js/**", "/images/**", "/uploads/**",
-                        "/imagenes/**", "/estilos.css").permitAll()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/cliente/**").hasRole("CLIENTE")
-                .antMatchers("/carrito/**").hasRole("CLIENTE") // Asegura que solo clientes puedan usar el carrito
-                .antMatchers("/pedidos/**").hasRole("CLIENTE") // Asegura que solo clientes puedan ver y crear pedidos
-                .anyRequest().authenticated()
+                    .antMatchers("/", "/index", "/index.html", "/registro", "/login",
+                            "/css/**", "/js/**", "/images/**", "/uploads/**",
+                            "/imagenes/**", "/estilos.css", "/security/validate", "/security/report-attack").permitAll()
+                    .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers("/cliente/**").hasRole("CLIENTE")
+                    .antMatchers("/carrito/**").hasRole("CLIENTE") // Asegura que solo clientes puedan usar el carrito
+                    .antMatchers("/pedidos/**").hasRole("CLIENTE") // Asegura que solo clientes puedan ver y crear pedidos
+                    .anyRequest().authenticated()
                 .and()
-
+                // 🛡️ HEADERS DE SEGURIDAD BÁSICOS
+                .headers(headers -> headers
+                    .frameOptions().deny() // X-Frame-Options: DENY
+                    .contentTypeOptions() // X-Content-Type-Options: nosniff
+                )
                 .formLogin()
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
@@ -149,12 +156,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .failureUrl("/login?error=true")
                     .permitAll()
                 .and()
-
                 .logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .permitAll();
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessUrl("/login?logout")
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                    .permitAll();
     }
 }

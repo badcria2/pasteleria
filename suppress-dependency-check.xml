@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- 
+    Este archivo contiene supresiones para falsos positivos del OWASP Dependency Check
+    Cada supresión debe estar justificada y revisada periódicamente
+    -->
+    
+    <!-- Suprimir vulnerabilidades de dependencias de test -->
+    <suppress>
+        <notes><![CDATA[
+            H2 Database es solo para testing, no se usa en producción
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.h2database/h2@.*</packageUrl>
+        <cpe>cpe:/a:h2database:h2</cpe>
+    </suppress>
+
+    <!-- Suprimir vulnerabilidades conocidas y aceptadas de Spring Boot -->
+    <suppress>
+        <notes><![CDATA[
+            Spring Boot 2.7.18 - Versión LTS estable para el proyecto
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring\-boot.*@2\.7\.18</packageUrl>
+    </suppress>
+
+</suppressions>

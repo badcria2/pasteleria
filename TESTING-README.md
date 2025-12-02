@@ -115,7 +115,7 @@ Para desarrollo activo, usar:
 mvn test -Dtest="**/*Test" -DfailIfNoTests=false --watch
 ```
 
-### 🎉 Beneficios del MVP
+### 🎉 Beneficios
 
 1. **Detección temprana** de errores
 2. **Refactoring seguro** con confianza

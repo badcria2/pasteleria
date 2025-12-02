@@ -100,7 +100,7 @@
 
 ---
 
-## 7. 🔄 PRUEBAS DE INTEGRACIÓN MVP
+## 7. 🔄 PRUEBAS DE INTEGRACIÓN 
 
 ### **🎯 Estrategia de Testing Integral**
 
@@ -116,7 +116,7 @@ Las pruebas de integración validan el funcionamiento completo del sistema, veri
 
 ---
 
-### **📋 Casos de Prueba de Integración MVP**
+### **📋 Casos de Prueba de Integración **
 
 | **ID** | **Caso de Prueba** | **Descripción** | **Componentes Involucrados** | **Flujo Validado** | **Estado** |
 |---|---|---|---|---|---|
@@ -134,7 +134,7 @@ Las pruebas de integración validan el funcionamiento completo del sistema, veri
 ```java
 @Test
 @Transactional
-public void testIntegrationMVP_FlujoCompletoDeCompra()
+public void testIntegration_FlujoCompletoDeCompra()
 ```
 - **Objetivo:** Validar proceso completo de compra desde inicio hasta facturación
 - **Flujo:** Cliente → Producto → Carrito → Pedido → Factura → PDF
@@ -150,7 +150,7 @@ public void testIntegrationMVP_FlujoCompletoDeCompra()
 ```java
 @Test
 @Transactional
-public void testIntegrationMVP_GestionProductos()
+public void testIntegration_GestionProductos()
 ```
 - **Objetivo:** Validar operaciones CRUD de productos
 - **Operaciones:**
@@ -164,7 +164,7 @@ public void testIntegrationMVP_GestionProductos()
 ```java
 @Test
 @Transactional
-public void testIntegrationMVP_ValidacionesDeNegocio()
+public void testIntegration_ValidacionesDeNegocio()
 ```
 - **Objetivo:** Verificar reglas críticas del negocio
 - **Validaciones:**

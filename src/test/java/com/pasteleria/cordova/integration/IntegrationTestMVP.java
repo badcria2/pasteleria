@@ -19,13 +19,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Pruebas de integración MVP para el sistema de pastelería
+ * Pruebas de integración para el sistema de pastelería
  * Verifica el flujo completo desde el carrito hasta la factura PDF
  */
 @SpringBootTest
 @ActiveProfiles("integration")
 @Transactional
-class IntegrationTestMVP {
+class IntegrationTest {
 
     @Autowired
     private ProductoService productoService;
@@ -84,7 +84,7 @@ class IntegrationTestMVP {
     }
 
     @Test
-    void testIntegrationMVP_FlujoCompletoDeCompra() {
+    void testIntegration_FlujoCompletoDeCompra() {
         // **CASO DE USO 1: FLUJO COMPLETO DE COMPRA**
         
         // 1. Obtener carrito del usuario

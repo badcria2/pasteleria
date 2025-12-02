@@ -3,7 +3,7 @@
 
 ---
 
-## 🔧 Entorno de Pruebas
+## 1. 🔧 Entorno de Pruebas
 
 | **Componente** | **Tecnología/Versión** |
 |---|---|
@@ -16,7 +16,7 @@
 
 ---
 
-## 📊 4. Casos de Prueba de la Tabla PRODUCTOS
+## 2. 📊 Casos de Prueba de la Tabla PRODUCTOS
 
 ### **ProductoServiceTest - Servicios de Gestión de Productos**
 
@@ -32,7 +32,7 @@
 
 ---
 
-## 📊 5. Casos de Prueba de la Tabla CARRITO
+## 3. 📊 Casos de Prueba de la Tabla CARRITO
 
 ### **CarritoServiceTest - Servicios de Gestión de Carrito**
 
@@ -44,7 +44,7 @@
 
 ---
 
-## 📊 6. Casos de Prueba de la Tabla PEDIDOS
+## 4. 📊 Casos de Prueba de la Tabla PEDIDOS
 
 ### **PedidoServiceTest - Servicios de Gestión de Pedidos**
 
@@ -58,7 +58,7 @@
 
 ---
 
-## 📊 7. Casos de Prueba del Servicio de FACTURAS
+## 5. 📊 Casos de Prueba del Servicio de FACTURAS
 
 ### **FacturaServiceTest - Servicios de Generación de Facturas PDF**
 
@@ -73,7 +73,7 @@
 
 ---
 
-## 📈 Resumen de Resultados
+## 6. 📈 Resumen de Resultados
 
 ### **📊 Estadísticas Generales**
 - **Total de Pruebas Ejecutadas:** 24 tests
@@ -100,7 +100,7 @@
 
 ---
 
-## 🎉 Conclusiones
+## 7. 🎉 Conclusiones
 
 ✅ **Todos los casos de prueba ejecutados exitosamente**  
 ✅ **Cobertura completa de funcionalidades críticas**  

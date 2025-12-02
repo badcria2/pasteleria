@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * 🔐 PRUEBAS DE SEGURIDAD MVP
+ * 🔐 PRUEBAS DE SEGURIDAD 
  * 
  * Conjunto de pruebas para validar aspectos críticos de seguridad:
  * - Prevención de inyección SQL
@@ -26,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(FacturaController.class)
 @ActiveProfiles("test")
-@DisplayName("🔐 Security Tests MVP - Sistema Pastelería")
-public class SecurityTestsMVP {
+@DisplayName("🔐 Security Tests - Sistema Pastelería")
+public class SecurityTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,12 +41,52 @@ public class SecurityTestsMVP {
     }
 
     @Test
-    @DisplayName("🛡️ SEC-001: Prevención de Inyección SQL en parámetros")
-    void testSQLInjectionPrevention() throws Exception {
-        // Intentar inyección SQL maliciosa en parámetro de ID
-        String sqlInjectionPayload = "1' OR '1'='1' --";
+    @DisplayName("🛡️ SEC-001: Prevención de Inyección SQL - OR Bypass Básico")
+    void testSQLInjectionORBypass() throws Exception {
+        // PAYLOAD PROBADO: admin' OR '1'='1
+        String sqlInjectionPayload = "admin' OR '1'='1";
         
         mockMvc.perform(get("/factura/generar/{id}", sqlInjectionPayload))
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("🛡️ SEC-001b: Prevención de Inyección SQL - UNION Attack")  
+    void testSQLInjectionUNION() throws Exception {
+        // PAYLOAD PROBADO: admin' UNION SELECT 1,2,3--
+        String unionPayload = "admin' UNION SELECT 1,2,3--";
+        
+        mockMvc.perform(get("/factura/generar/{id}", unionPayload))
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("🛡️ SEC-001c: Prevención de Inyección SQL - Comment Bypass")
+    void testSQLInjectionComments() throws Exception {
+        // PAYLOAD PROBADO: admin'/**/OR/**/1=1--
+        String commentBypassPayload = "admin'/**/OR/**/1=1--";
+        
+        mockMvc.perform(get("/factura/generar/{id}", commentBypassPayload))
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("🛡️ SEC-001d: Prevención de Inyección SQL - True Condition")
+    void testSQLInjectionTrueCondition() throws Exception {
+        // PAYLOAD PROBADO: ' OR 'x'='x
+        String trueConditionPayload = "' OR 'x'='x";
+        
+        mockMvc.perform(get("/factura/generar/{id}", trueConditionPayload))
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("🛡️ SEC-001e: Prevención de Inyección SQL - Destructive Commands")
+    void testSQLInjectionDestructive() throws Exception {
+        // PAYLOAD PROBADO: admin'; DROP TABLE usuarios;--
+        String destructivePayload = "admin'; DROP TABLE usuarios;--";
+        
+        mockMvc.perform(get("/factura/generar/{id}", destructivePayload))
                .andExpect(status().isBadRequest());
     }
 

@@ -103,6 +103,79 @@ Attack Report       Normal Flow
 
 ---
 
+## 🎯 PASOS PARA REPLICAR LA VALIDACIÓN
+
+### 📋 Secuencia Completa de Pruebas:
+
+#### 1️⃣ **Preparación del Entorno:**
+```bash
+# Clonar y navegar al proyecto
+git clone <repo-url>
+cd pasteleria
+
+# Compilar proyecto con correcciones
+mvn clean compile
+```
+
+#### 2️⃣ **Ejecutar Tests de Seguridad:**
+```bash
+# Tests unitarios de seguridad
+mvn test -Dtest=SecurityTestsStandalone
+mvn test -Dtest=SecurityTests
+
+# Análisis estático
+mvn spotbugs:spotbugs
+# Ver: target/spotbugs.html
+```
+
+#### 3️⃣ **Pruebas Dinámicas:**
+```bash
+# Terminal 1: Iniciar aplicación
+mvn spring-boot:run -Dspring-boot.run.profiles=security-test
+
+# Terminal 2: Probar payloads maliciosos
+$payloads = @(
+    "admin'+OR+'1'='1",
+    "admin'+UNION+SELECT+1,2,3--", 
+    "admin'/**/OR/**/1=1--",
+    "'+OR+'x'='x",
+    "admin';+DROP+TABLE+usuarios;--"
+)
+
+foreach ($payload in $payloads) {
+    $body = "email=$payload&password=test"
+    $response = Invoke-WebRequest -Uri "http://localhost:8080/login" -Method POST -Body $body
+    Write-Host "Payload: $payload - Status: $($response.StatusCode)"
+}
+```
+
+#### 4️⃣ **Verificar Funcionalidad Normal:**
+```bash
+# Probar login legítimo
+$body = "email=admin@pasteleria.com&password=admin123"
+$response = Invoke-WebRequest -Uri "http://localhost:8080/login" -Method POST -Body $body
+# Debe redirigir correctamente
+```
+
+#### 5️⃣ **Tests de Integración:**
+```bash
+# Ejecutar suite completa
+mvn test -Dtest=IntegrationTestMVP
+
+# Con cobertura de código
+mvn jacoco:prepare-agent test jacoco:report
+# Ver: target/site/jacoco/index.html
+```
+
+### 📊 **Métricas Esperadas:**
+- ✅ Todos los payloads SQL injection: **BLOQUEADOS**
+- ✅ Login normal: **FUNCIONAL**  
+- ✅ Tests unitarios: **PASSED**
+- ✅ SpotBugs: **130 hallazgos (⬇️ -7 mejoras)**
+- ✅ Cobertura de código: **>80%**
+
+---
+
 ## 🚀 ESTADO FINAL DEL SISTEMA
 
 **🛡️ NIVEL DE SEGURIDAD: ALTO**

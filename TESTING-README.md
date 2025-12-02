@@ -1,6 +1,43 @@
 # 🧪 Pruebas Unitarias - Pastelería Córdova
 
-## MVP de Testing con JUnit 5 y Mockito
+## 🚀 GUÍA DE EJECUCIÓN RÁPIDA
+
+### ⚡ **Comandos Esenciales:**
+```bash
+# Ejecutar TODOS los tests
+mvn clean test
+
+# Solo tests de seguridad (SQL Injection incluido)
+mvn test -Dtest="*Security*"
+
+# Análisis estático + Tests
+mvn clean compile test spotbugs:spotbugs
+
+# Cobertura de código
+mvn jacoco:prepare-agent test jacoco:report
+```
+
+### 🔒 **Validación Crítica SQL Injection:**
+```bash
+# Terminal 1: Iniciar app
+mvn spring-boot:run
+
+# Terminal 2: Validar corrección
+.\test_security_fix.ps1
+
+# Resultado esperado: Todos los payloads BLOQUEADOS ✅
+```
+
+### 📊 **Payloads SQL Injection Probados:**
+- `admin' OR '1'='1` → ✅ **BLOQUEADO**
+- `admin' UNION SELECT 1,2,3--` → ✅ **BLOQUEADO**
+- `admin'/**/OR/**/1=1--` → ✅ **BLOQUEADO** 
+- `' OR 'x'='x` → ✅ **BLOQUEADO**
+- `admin'; DROP TABLE usuarios;--` → ✅ **BLOQUEADO**
+
+---
+
+## Testing con JUnit 5 y Mockito
 
 ### 🚀 Pruebas Implementadas
 

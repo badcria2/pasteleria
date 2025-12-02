@@ -169,7 +169,7 @@ class IntegrationTest {
     }
 
     @Test
-    void testIntegrationMVP_GestionProductos() {
+    void testIntegration_GestionProductos() {
         // **CASO DE USO 2: GESTIÓN DE PRODUCTOS**
         
         // 1. Listar todos los productos
@@ -197,7 +197,7 @@ class IntegrationTest {
     }
 
     @Test
-    void testIntegrationMVP_ValidacionesDeNegocio() {
+    void testIntegration_ValidacionesDeNegocio() {
         // **CASO DE USO 3: VALIDACIONES DE NEGOCIO**
         
         // 1. Validar que no se pueden agregar productos con stock insuficiente
@@ -243,7 +243,7 @@ class IntegrationTest {
     }
 
     @Test
-    void testIntegrationMVP_RendimientoYCarga() {
+    void testIntegration_RendimientoYCarga() {
         // **CASO DE USO 4: RENDIMIENTO Y CARGA**
         
         // 1. Crear múltiples productos para probar rendimiento
@@ -285,7 +285,7 @@ class IntegrationTest {
     }
 
     @Test
-    void testIntegrationMVP_SeguridadEIntegridad() {
+    void testIntegration_SeguridadEIntegridad() {
         // **CASO DE USO 5: SEGURIDAD E INTEGRIDAD**
         
         // 1. Verificar que no se pueden crear usuarios con email duplicado

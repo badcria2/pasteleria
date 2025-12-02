@@ -3,6 +3,77 @@
 
 ---
 
+## 🚀 GUÍA DE EJECUCIÓN PASO A PASO
+
+### 📋 **Pasos Previos - Configuración del Entorno:**
+```bash
+# 1. Verificar Java y Maven
+java -version  # Debe ser Java 8+
+mvn -version   # Debe ser Maven 3.6+
+
+# 2. Clonar y navegar al proyecto
+git clone <repository-url>
+cd pasteleria
+
+# 3. Configurar base de datos de pruebas (H2)
+# Las configuraciones están en: src/test/resources/application-test.properties
+```
+
+### 🧪 **Ejecutar Tests Unitarios:**
+```bash
+# Opción 1: Ejecutar TODOS los tests
+mvn clean test
+
+# Opción 2: Ejecutar tests específicos por clase
+mvn test -Dtest=ProductoServiceTest
+mvn test -Dtest=CarritoServiceTest  
+mvn test -Dtest=PedidoServiceTest
+mvn test -Dtest=UsuarioServiceTest
+
+# Opción 3: Ejecutar tests por patrón
+mvn test -Dtest="*Service*"
+mvn test -Dtest="*Controller*"
+```
+
+### 🔒 **Ejecutar Tests de Seguridad:**
+```bash
+# Tests unitarios de seguridad
+mvn test -Dtest=SecurityTestsStandalone
+mvn test -Dtest=SecurityTests
+
+# Tests con filtro de seguridad
+mvn test -Dtest="*Security*"
+```
+
+### 🏗️ **Ejecutar Tests de Integración:**
+```bash
+# Tests de integración completos
+mvn test -Dtest=IntegrationTestMVP
+
+# Con perfil de integración
+mvn test -Dspring.profiles.active=integration
+```
+
+### 📊 **Generar Reportes de Cobertura:**
+```bash
+# Ejecutar tests con JaCoCo
+mvn clean jacoco:prepare-agent test jacoco:report
+
+# Ver reporte HTML generado
+# Archivo: target/site/jacoco/index.html
+```
+
+### 🔍 **Análisis Estático de Código:**
+```bash
+# SpotBugs + FindSecBugs para seguridad
+mvn compile spotbugs:spotbugs
+
+# Ver reporte HTML
+# Archivo: target/spotbugs.html
+```
+
+---
+
 ## 1. 🔧 Entorno de Pruebas
 
 | **Componente** | **Tecnología/Versión** |
@@ -178,7 +249,7 @@ public void testIntegration_ValidacionesDeNegocio()
 ```java
 @Test
 @Transactional
-public void testIntegrationMVP_RendimientoYCarga()
+public void testIntegration_RendimientoYCarga()
 ```
 - **Objetivo:** Evaluar rendimiento con múltiples operaciones
 - **Escenario:**
@@ -191,7 +262,7 @@ public void testIntegrationMVP_RendimientoYCarga()
 ```java
 @Test
 @Transactional
-public void testIntegrationMVP_SeguridadEIntegridad()
+public void testIntegration_SeguridadEIntegridad()
 ```
 - **Objetivo:** Validar integridad referencial y constraintos
 - **Validaciones:**

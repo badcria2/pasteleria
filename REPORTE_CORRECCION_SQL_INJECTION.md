@@ -113,6 +113,53 @@ Response: Retorna formulario sin acceso no autorizado
 
 ---
 
+## 🎯 PASOS PARA VALIDAR LA CORRECCIÓN
+
+### ✅ Verificación Manual de la Corrección:
+```bash
+# PASO 1: Compilar con las correcciones
+mvn clean compile
+
+# PASO 2: Iniciar la aplicación
+mvn spring-boot:run
+
+# PASO 3: Probar payload malicioso (debe fallar)
+curl -X POST "http://localhost:8080/login" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "email=admin'+OR+'1'='1&password=test"
+# Resultado esperado: Formulario de login (no bypass)
+
+# PASO 4: Probar login válido (debe funcionar)
+curl -X POST "http://localhost:8080/login" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "email=admin@pasteleria.com&password=admin123"
+# Resultado esperado: Redirección a dashboard
+```
+
+### 🧪 Tests Automatizados de Validación:
+```bash
+# Ejecutar script de validación automática
+.\test_security_fix.ps1
+
+# Ejecutar tests unitarios de seguridad
+mvn test -Dtest=SecurityTestsStandalone
+
+# Verificar logs de intentos maliciosos
+# Los logs deben mostrar: "🚨 Intento de login malicioso detectado"
+```
+
+### 📊 Verificación con SpotBugs Post-Corrección:
+```bash
+# Ejecutar análisis estático actualizado
+mvn spotbugs:spotbugs
+
+# Comparar métricas:
+# Antes: 137 hallazgos totales
+# Después: 130 hallazgos (-7 mejoras)
+```
+
+---
+
 ## 🔧 ARQUITECTURA DE SEGURIDAD IMPLEMENTADA
 
 ```

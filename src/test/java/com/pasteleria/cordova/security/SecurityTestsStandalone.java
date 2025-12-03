@@ -8,22 +8,9 @@ import org.junit.jupiter.api.MethodOrderer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * 🔐 PRUEBAS DE SEGURIDAD INDEPENDIENTES - MVP
- * 
- * Conjunto de pruebas unitarias para validar aspectos críticos de seguridad
- * sin dependencias del contexto Spring:
- * - Validación de inputs con SecurityUtils
- * - Prevención de inyección SQL
- * - Protección contra XSS
- * - Validación de paths seguros
- * - Sanitización de datos
- * 
- * @author Security Testing Framework
- * @version 1.0 - MVP
- */
+ 
 @TestMethodOrder(MethodOrderer.DisplayName.class)
-@DisplayName("🔐 Security Tests MVP - Sistema Pastelería (Independent)")
+@DisplayName("🔐 Security Tests - Sistema Pastelería (Independent)")
 public class SecurityTestsStandalone {
 
     private SecurityUtils securityUtils;

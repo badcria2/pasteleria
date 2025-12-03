@@ -248,7 +248,7 @@
       <plugin>
         <groupId>org.owasp</groupId>
         <artifactId>dependency-check-maven</artifactId>
-        <version>8.4.2</version>
+        <version>11.1.0</version>
         <configuration>
           <formats>
             <format>HTML</format>
@@ -258,9 +258,20 @@
           <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
           <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
           <suppressionFile>suppress-dependency-check.xml</suppressionFile>
-          <!-- Configuración para trabajar sin API key -->
-          <autoUpdate>false</autoUpdate>
+          <!-- Configuración API NVD 2.0 - URLs oficiales correctas -->
+          <nvdApiKey>f328169c-62cf-4368-9ad4-8409efe531a3</nvdApiKey>
+          <nvdApiEndpoint>https://services.nvd.nist.gov/rest/json/cves/2.0</nvdApiEndpoint>
+          <nvdCpeApiEndpoint>https://services.nvd.nist.gov/rest/json/cpes/2.0</nvdCpeApiEndpoint>
+          <nvdApiDelay>6000</nvdApiDelay>
+          <nvdMaxRetryCount>5</nvdMaxRetryCount>
+          <nvdValidForHours>48</nvdValidForHours>
+          <!-- Forzar uso exclusivo de API 2.0 -->
+          <enableNvdApi>true</enableNvdApi>
+          <enableHostedSuppressions>false</enableHostedSuppressions>
+          <!-- Desactivar feeds legacy -->
           <cveValidForHours>0</cveValidForHours>
+          <autoUpdate>true</autoUpdate>
+          <!-- Configuración optimizada -->
           <skipTestScope>true</skipTestScope>
           <skipProvidedScope>true</skipProvidedScope>
           <!-- Desactivar analizadores no necesarios para mejor rendimiento -->
@@ -270,6 +281,9 @@
           <pyPackageAnalyzerEnabled>false</pyPackageAnalyzerEnabled>
           <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
           <composerAnalyzerEnabled>false</composerAnalyzerEnabled>
+          <!-- Timeouts mejorados para API 2.0 -->
+          <connectionTimeout>120000</connectionTimeout>
+          <readTimeout>600000</readTimeout>
         </configuration>
         <executions>
           <execution>

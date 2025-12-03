@@ -18,7 +18,7 @@
 | **FindSecBugs** | 1.12.0 | ✅ Integrado | Detección de vulnerabilidades de seguridad |
 | **OWASP HTML Sanitizer** | 20220608.1 | ✅ Implementado | Protección XSS |
 | **Apache Commons Validator** | 1.7 | ✅ Implementado | Validación de inputs |
-| **OWASP Dependency Check** | 8.4.2 | ⚠️ Falló | Requiere API key NVD |
+| **OWASP Dependency Check** | 8.4.2 | ❌ Sin configurar | Requiere API key NVD (gratuita) |
 | **SecurityUtils Custom** | 1.0 | ✅ Implementado | Validaciones personalizadas |
 
 ### 2. Pruebas de Seguridad Ejecutadas
@@ -190,11 +190,33 @@ public ResponseEntity<String> validateInput(@RequestParam String input, HttpServ
 
 ## ⚠️ Recomendaciones Pendientes
 
-### 1. **Alto - Configurar OWASP Dependency Check**
+### 2. **Alto - OWASP Dependency Check** ⚠️ **PROBLEMA CONECTIVIDAD NVD API**
+
+#### Estado Actual: ❌ **NO FUNCIONAL** (Problema de conectividad)
 ```bash
-# Registrar API key en NVD  
-# Ejecutar escaneo de dependencias vulnerable
-mvn org.owasp:dependency-check-maven:check
+# API KEY CONFIGURADA: f328169c-62cf-4368-9ad4-8409efe531a3
+$env:NVD_API_KEY="f328169c-62cf-4368-9ad4-8409efe531a3"
+
+# COMANDO EJECUTADO:
+mvn org.owasp:dependency-check-maven:9.2.0:check
+
+# ERROR OBTENIDO:
+[ERROR] Error updating the NVD Data; the NVD returned a 403 or 404 error
+[ERROR] NoDataException: No documents exist
+```
+
+#### ⚡ ALTERNATIVAS IMPLEMENTADAS:
+```bash
+# 1. GitHub Dependabot (RECOMENDADO)
+# Configurar en repositorio: .github/dependabot.yml
+
+# 2. Snyk CLI alternativo
+npm install -g snyk
+snyk test --all-projects
+
+# 3. Manual dependency review
+mvn dependency:tree
+mvn versions:display-dependency-updates
 ```
 
 ### 4. **Medio - Validación de Inputs Centralizada**
